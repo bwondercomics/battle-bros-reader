@@ -1172,7 +1172,12 @@ body.fullscreen-active .controls.hidden {
   // ==================== LAYOUT HELPERS ====================
   
   function isTwoPageMode() {
-    return window.innerWidth >= CONFIG.TWO_PAGE_BREAKPOINT;
+    // Check if screen width meets the minimum requirement
+    const hasMinWidth = window.innerWidth >= CONFIG.TWO_PAGE_BREAKPOINT;
+    // Check if device is in landscape orientation (width > height)
+    const isLandscape = window.innerWidth > window.innerHeight;
+    // Only show two-page mode in landscape orientation with sufficient width
+    return hasMinWidth && isLandscape;
   }
 
   function canShowTwoPages() {
@@ -1787,6 +1792,16 @@ body.fullscreen-active .controls.hidden {
         changeChapter(e.target.value);
       });
     }
+
+    // Handle window resize and orientation changes
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      // Debounce resize events to avoid excessive re-renders
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        render();
+      }, 150);
+    });
   }
 
   // ==================== QUOTE RANDOMIZER ====================
