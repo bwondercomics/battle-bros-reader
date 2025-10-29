@@ -2,9 +2,52 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>Battle Bros Reader</title>
-<link href="https://fonts.googleapis.com/css2?family=Righteous&family=Bebas+Neue&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5" />
+<title>Battle Bros - Free Online Comic Reader | Read Battle Bros Comics</title>
+<meta name="description" content="Read Battle Bros comics online for free! Enjoy smooth page transitions, zoom features, and a retro cyberpunk aesthetic. Perfect for mobile and desktop reading." />
+<meta name="keywords" content="battle bros, comic reader, online comics, free comics, webcomic, manga reader" />
+<meta name="author" content="Battle Bros Comics" />
+<meta name="theme-color" content="#00d9ff" />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://battlebros.com/" />
+<meta property="og:title" content="Battle Bros - Free Online Comic Reader" />
+<meta property="og:description" content="Read Battle Bros comics online for free! Enjoy smooth page transitions, zoom features, and a retro cyberpunk aesthetic." />
+<meta property="og:image" content="https://battlebros.com/banner1.png" />
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content="https://battlebros.com/" />
+<meta property="twitter:title" content="Battle Bros - Free Online Comic Reader" />
+<meta property="twitter:description" content="Read Battle Bros comics online for free! Enjoy smooth page transitions, zoom features, and a retro cyberpunk aesthetic." />
+<meta property="twitter:image" content="https://battlebros.com/banner1.png" />
+
+<!-- Favicons -->
+<link rel="icon" type="image/png" sizes="32x32" href="panel.png" />
+<link rel="apple-touch-icon" href="panel.png" />
+<link rel="manifest" href="manifest.json" />
+
+<!-- Performance optimizations -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Righteous&family=Bebas+Neue&display=swap" rel="stylesheet" />
+
+<!-- Schema.org structured data for SEO -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Battle Bros Comic Reader",
+  "url": "https://battlebros.com/",
+  "description": "Free online comic reader featuring the Battle Bros comic series with smooth navigation and retro cyberpunk design.",
+  "potentialAction": {
+    "@type": "ReadAction",
+    "target": "https://battlebros.com/"
+  }
+}
+</script>
+
 <style>
 /* ==================== CSS VARIABLES ==================== */
 :root {
@@ -616,6 +659,56 @@ body.fullscreen-active .controls.hidden {
 }
 
 /* ==================== RESPONSIVE ==================== */
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  body::after {
+    animation: none;
+  }
+  
+  .logo {
+    animation: none;
+  }
+  
+  .title h1 {
+    animation: none;
+  }
+}
+
+/* Better keyboard focus indicators */
+button:focus-visible,
+select:focus-visible,
+a:focus-visible,
+.viewport:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Skip to content link for accessibility */
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--accent);
+  color: var(--bg-dark);
+  padding: 8px 16px;
+  text-decoration: none;
+  font-weight: bold;
+  z-index: 1000;
+  border-radius: 0 0 4px 0;
+}
+
+.skip-to-content:focus {
+  top: 0;
+}
+
 /* Aspect ratio ~7:5 (1.4) or narrower - move panels below viewport */
 @media (max-aspect-ratio: 7/5) {
   html, body {
@@ -747,6 +840,9 @@ body.fullscreen-active .controls.hidden {
 </style>
 </head>
 <body>
+
+<!-- Skip to content link for accessibility -->
+<a href="#viewport" class="skip-to-content">Skip to comic</a>
 
 <!-- ==================== HEADER ==================== -->
 <header class="topbar" id="topbar">
@@ -1040,8 +1136,9 @@ body.fullscreen-active .controls.hidden {
     "/// PNEUMATICS RULE ///",
     "/// SONICS FRICKS ///",
     "/// I LOVE YOU ///",
-    "/// kill your family ///",
-    "/// BOUNCE ON A BROTHA ///"
+    "/// BOUNCE ON A BROTHA ///",
+    "/// EPIC BATTLES AWAIT ///",
+    "/// YOUR ADVENTURE STARTS HERE ///"
   ];
 
   // ==================== STATE ====================
