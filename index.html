@@ -2,9 +2,52 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>Battle Bros Reader</title>
-<link href="https://fonts.googleapis.com/css2?family=Righteous&family=Bebas+Neue&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5" />
+<title>Battle Bros - Free Online Comic Reader | Read Battle Bros Comics</title>
+<meta name="description" content="Read Battle Bros comics online for free! Enjoy smooth page transitions, zoom features, and a retro cyberpunk aesthetic. Perfect for mobile and desktop reading." />
+<meta name="keywords" content="battle bros, comic reader, online comics, free comics, webcomic, manga reader" />
+<meta name="author" content="Battle Bros Comics" />
+<meta name="theme-color" content="#00d9ff" />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://battlebros.com/" />
+<meta property="og:title" content="Battle Bros - Free Online Comic Reader" />
+<meta property="og:description" content="Read Battle Bros comics online for free! Enjoy smooth page transitions, zoom features, and a retro cyberpunk aesthetic." />
+<meta property="og:image" content="https://battlebros.com/banner1.png" />
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content="https://battlebros.com/" />
+<meta property="twitter:title" content="Battle Bros - Free Online Comic Reader" />
+<meta property="twitter:description" content="Read Battle Bros comics online for free! Enjoy smooth page transitions, zoom features, and a retro cyberpunk aesthetic." />
+<meta property="twitter:image" content="https://battlebros.com/banner1.png" />
+
+<!-- Favicons -->
+<link rel="icon" type="image/png" sizes="32x32" href="panel.png" />
+<link rel="apple-touch-icon" href="panel.png" />
+<link rel="manifest" href="manifest.json" />
+
+<!-- Performance optimizations -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Righteous&family=Bebas+Neue&display=swap" rel="stylesheet" />
+
+<!-- Schema.org structured data for SEO -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Battle Bros Comic Reader",
+  "url": "https://battlebros.com/",
+  "description": "Free online comic reader featuring the Battle Bros comic series with smooth navigation and retro cyberpunk design.",
+  "potentialAction": {
+    "@type": "ReadAction",
+    "target": "https://battlebros.com/"
+  }
+}
+</script>
+
 <style>
 /* ==================== CSS VARIABLES ==================== */
 :root {
@@ -616,6 +659,223 @@ body.fullscreen-active .controls.hidden {
 }
 
 /* ==================== RESPONSIVE ==================== */
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  body::after {
+    animation: none;
+  }
+  
+  .logo {
+    animation: none;
+  }
+  
+  .title h1 {
+    animation: none;
+  }
+}
+
+/* Better keyboard focus indicators */
+button:focus-visible,
+select:focus-visible,
+a:focus-visible,
+.viewport:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Skip to content link for accessibility */
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--accent);
+  color: var(--bg-dark);
+  padding: 8px 16px;
+  text-decoration: none;
+  font-weight: bold;
+  z-index: 1000;
+  border-radius: 0 0 4px 0;
+}
+
+.skip-to-content:focus {
+  top: 0;
+}
+
+/* Keyboard shortcuts help overlay */
+.shortcuts-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 18, 0.95);
+  backdrop-filter: blur(10px);
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.shortcuts-overlay.active {
+  display: flex;
+}
+
+.shortcuts-panel {
+  background: linear-gradient(135deg, rgba(26,26,46,0.95), rgba(10,10,18,0.95));
+  border: 3px solid var(--primary);
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 0 40px rgba(0,217,255,0.3);
+}
+
+.shortcuts-panel h2 {
+  margin: 0 0 24px 0;
+  font-size: 32px;
+  color: var(--primary);
+  font-family: 'Bebas Neue';
+  letter-spacing: 2px;
+}
+
+.shortcuts-grid {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.shortcut-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: linear-gradient(135deg, rgba(0,217,255,0.08), rgba(255,0,234,0.06));
+  border: 1px solid rgba(0,217,255,0.2);
+  border-radius: 6px;
+}
+
+.shortcut-key {
+  background: var(--bg-dark);
+  border: 2px solid var(--accent);
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-family: 'Bebas Neue';
+  color: var(--accent);
+  font-size: 16px;
+  min-width: 80px;
+  text-align: center;
+}
+
+.shortcut-desc {
+  flex: 1;
+  margin-left: 16px;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.shortcuts-close {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
+  color: var(--bg-dark);
+  border: none;
+  border-radius: 6px;
+  font-family: 'Bebas Neue';
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.shortcuts-close:hover {
+  transform: scale(1.02);
+}
+
+/* End of chapter overlay */
+.chapter-end-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(10,10,18,0.98), rgba(26,26,46,0.98));
+  backdrop-filter: blur(8px);
+  z-index: 35;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 300ms ease-in;
+}
+
+.chapter-end-overlay.active {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.chapter-end-content {
+  text-align: center;
+  max-width: 500px;
+}
+
+.chapter-end-content h2 {
+  font-family: 'Bebas Neue';
+  font-size: 48px;
+  color: var(--primary);
+  margin: 0 0 16px 0;
+  letter-spacing: 3px;
+  text-shadow: 0 0 20px rgba(0,217,255,0.5);
+}
+
+.chapter-end-content p {
+  font-size: 18px;
+  color: var(--text);
+  margin: 0 0 32px 0;
+  line-height: 1.6;
+}
+
+.chapter-end-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.chapter-end-btn {
+  padding: 12px 24px;
+  border: 2px solid var(--primary);
+  background: linear-gradient(135deg, rgba(0,217,255,0.1), rgba(255,0,234,0.08));
+  color: var(--text);
+  font-family: 'Bebas Neue';
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.chapter-end-btn:hover {
+  background: linear-gradient(135deg, rgba(0,217,255,0.2), rgba(255,0,234,0.15));
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0,217,255,0.3);
+}
+
+.chapter-end-btn.primary {
+  background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
+  color: var(--bg-dark);
+  border: none;
+  box-shadow: 0 0 20px rgba(0,217,255,0.5);
+}
+
 /* Aspect ratio ~7:5 (1.4) or narrower - move panels below viewport */
 @media (max-aspect-ratio: 7/5) {
   html, body {
@@ -748,6 +1008,9 @@ body.fullscreen-active .controls.hidden {
 </head>
 <body>
 
+<!-- Skip to content link for accessibility -->
+<a href="#viewport" class="skip-to-content">Skip to comic</a>
+
 <!-- ==================== HEADER ==================== -->
 <header class="topbar" id="topbar">
   <div class="brand">
@@ -851,6 +1114,7 @@ body.fullscreen-active .controls.hidden {
       <span class="status" id="pageIndicator" aria-live="polite">PAGE 0 / 0</span>
     </div>
     <div class="right">
+      <button class="btn" id="helpBtn" type="button" aria-label="Show keyboard shortcuts" title="Keyboard shortcuts (?)">?</button>
       <button class="btn" id="zoomOut" type="button" aria-label="Zoom out">−</button>
       <button class="btn primary" id="fitBtn" type="button" aria-label="Fit">⚡ FIT</button>
       <button class="btn" id="zoomIn" type="button" aria-label="Zoom in">+</button>
@@ -858,6 +1122,57 @@ body.fullscreen-active .controls.hidden {
     </div>
   </div>
 </main>
+
+<!-- Keyboard Shortcuts Overlay -->
+<div class="shortcuts-overlay" id="shortcutsOverlay">
+  <div class="shortcuts-panel">
+    <h2>⌨️ Keyboard Shortcuts</h2>
+    <div class="shortcuts-grid">
+      <div class="shortcut-item">
+        <span class="shortcut-key">← →</span>
+        <span class="shortcut-desc">Navigate between pages</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="shortcut-key">+ / =</span>
+        <span class="shortcut-desc">Zoom in</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="shortcut-key">−</span>
+        <span class="shortcut-desc">Zoom out</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="shortcut-key">0</span>
+        <span class="shortcut-desc">Reset zoom to default</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="shortcut-key">F</span>
+        <span class="shortcut-desc">Toggle fullscreen mode</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="shortcut-key">?</span>
+        <span class="shortcut-desc">Show/hide this help</span>
+      </div>
+      <div class="shortcut-item">
+        <span class="shortcut-key">ESC</span>
+        <span class="shortcut-desc">Close overlays or exit fullscreen</span>
+      </div>
+    </div>
+    <button class="shortcuts-close" id="shortcutsClose">Close</button>
+  </div>
+</div>
+
+<!-- End of Chapter Overlay -->
+<div class="chapter-end-overlay" id="chapterEndOverlay">
+  <div class="chapter-end-content">
+    <h2>✨ CHAPTER COMPLETE ✨</h2>
+    <p>You've reached the end of this chapter! Ready for more Battle Bros action?</p>
+    <div class="chapter-end-buttons">
+      <button class="chapter-end-btn primary" id="nextChapterBtn">Next Chapter</button>
+      <button class="chapter-end-btn" id="restartChapterBtn">Restart Chapter</button>
+      <button class="chapter-end-btn" id="closeEndOverlay">Keep Reading</button>
+    </div>
+  </div>
+</div>
 
 <script>
 (function() {
@@ -1040,8 +1355,9 @@ body.fullscreen-active .controls.hidden {
     "/// PNEUMATICS RULE ///",
     "/// SONICS FRICKS ///",
     "/// I LOVE YOU ///",
-    "/// kill your family ///",
-    "/// BOUNCE ON A BROTHA ///"
+    "/// BOUNCE ON A BROTHA ///",
+    "/// EPIC BATTLES AWAIT ///",
+    "/// YOUR ADVENTURE STARTS HERE ///"
   ];
 
   // ==================== STATE ====================
@@ -1333,6 +1649,8 @@ body.fullscreen-active .controls.hidden {
     const isAtEnd = state.pageIndex >= total - 1;
     
     if (rightIsLast || isAtEnd) {
+      // Show end of chapter overlay
+      showEndOfChapter();
       return;
     }
 
@@ -1349,6 +1667,14 @@ body.fullscreen-active .controls.hidden {
       state.pageIndex = newIndex;
       render();
       saveProgress();
+      
+      // Check if we just loaded the last page
+      const nowAtEnd = state.pageIndex >= total - 1;
+      const nowRightIsLast = twoPageMode && state.pageIndex + 1 === total - 1;
+      if (nowAtEnd || nowRightIsLast) {
+        // Delay showing overlay slightly so user sees last page first
+        setTimeout(() => showEndOfChapter(), 800);
+      }
     });
   }
 
@@ -1689,13 +2015,19 @@ body.fullscreen-active .controls.hidden {
   // ==================== EVENT HANDLERS ====================
   
   function attachEventHandlers() {
+    // Navigation buttons
     if (el.prevBtn) el.prevBtn.addEventListener('click', prevPage);
     if (el.nextBtn) el.nextBtn.addEventListener('click', nextPage);
 
+    // Zoom and view buttons
     if (el.zoomIn) el.zoomIn.addEventListener('click', zoomIn);
     if (el.zoomOut) el.zoomOut.addEventListener('click', zoomOut);
     if (el.fitBtn) el.fitBtn.addEventListener('click', fitToScreen);
     if (el.fullscreenBtn) el.fullscreenBtn.addEventListener('click', toggleFullscreen);
+    
+    // Help button
+    const helpBtn = document.getElementById('helpBtn');
+    if (helpBtn) helpBtn.addEventListener('click', toggleShortcutsOverlay);
 
     if (el.edgeLeftBtn) {
       el.edgeLeftBtn.addEventListener('click', (e) => {
@@ -1735,6 +2067,9 @@ body.fullscreen-active .controls.hidden {
     }
 
     document.addEventListener('keydown', (e) => {
+      // Don't interfere if user is typing in an input
+      if (e.target.matches('input, textarea, select')) return;
+
       switch (e.key) {
         case 'ArrowLeft':
           e.preventDefault();
@@ -1761,6 +2096,18 @@ body.fullscreen-active .controls.hidden {
         case 'F':
           e.preventDefault();
           toggleFullscreen();
+          break;
+        case '?':
+          e.preventDefault();
+          toggleShortcutsOverlay();
+          break;
+        case 'Escape':
+          e.preventDefault();
+          closeShortcutsOverlay();
+          hideEndOfChapter();
+          if (document.fullscreenElement) {
+            document.exitFullscreen();
+          }
           break;
       }
     });
@@ -1817,6 +2164,27 @@ body.fullscreen-active .controls.hidden {
         render();
       }, 150);
     });
+
+    // Shortcuts overlay buttons
+    const shortcutsClose = document.getElementById('shortcutsClose');
+    if (shortcutsClose) {
+      shortcutsClose.addEventListener('click', closeShortcutsOverlay);
+    }
+
+    // End of chapter overlay buttons
+    const nextChapterBtn = document.getElementById('nextChapterBtn');
+    const restartChapterBtn = document.getElementById('restartChapterBtn');
+    const closeEndOverlay = document.getElementById('closeEndOverlay');
+    
+    if (nextChapterBtn) {
+      nextChapterBtn.addEventListener('click', goToNextChapter);
+    }
+    if (restartChapterBtn) {
+      restartChapterBtn.addEventListener('click', restartChapter);
+    }
+    if (closeEndOverlay) {
+      closeEndOverlay.addEventListener('click', hideEndOfChapter);
+    }
   }
 
   // ==================== QUOTE RANDOMIZER ====================
@@ -1830,6 +2198,56 @@ body.fullscreen-active .controls.hidden {
     if (!el.subtitle) return;
     const idx = pickRandomQuoteIndexOnce();
     if (idx >= 0) el.subtitle.textContent = QUOTES[idx];
+  }
+
+  // ==================== SHORTCUTS OVERLAY ====================
+  
+  function toggleShortcutsOverlay() {
+    const overlay = document.getElementById('shortcutsOverlay');
+    if (overlay) {
+      overlay.classList.toggle('active');
+    }
+  }
+
+  function closeShortcutsOverlay() {
+    const overlay = document.getElementById('shortcutsOverlay');
+    if (overlay) {
+      overlay.classList.remove('active');
+    }
+  }
+
+  // ==================== END OF CHAPTER ====================
+  
+  function showEndOfChapter() {
+    const overlay = document.getElementById('chapterEndOverlay');
+    if (overlay) {
+      overlay.classList.add('active');
+    }
+  }
+
+  function hideEndOfChapter() {
+    const overlay = document.getElementById('chapterEndOverlay');
+    if (overlay) {
+      overlay.classList.remove('active');
+    }
+  }
+
+  function goToNextChapter() {
+    const chapterNames = Object.keys(chapters);
+    const currentIndex = chapterNames.indexOf(state.currentChapter);
+    if (currentIndex >= 0 && currentIndex < chapterNames.length - 1) {
+      const nextChapter = chapterNames[currentIndex + 1];
+      if (el.chapter) el.chapter.value = nextChapter;
+      changeChapter(nextChapter);
+      hideEndOfChapter();
+    }
+  }
+
+  function restartChapter() {
+    state.pageIndex = 0;
+    render();
+    saveProgress();
+    hideEndOfChapter();
   }
 
   // ==================== INITIALIZATION ====================
