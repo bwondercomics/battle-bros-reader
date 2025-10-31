@@ -1295,8 +1295,7 @@ a:focus-visible,
     <aside class="side-panel left" id="leftPanel">
       <div class="preview" id="leftPreview" aria-hidden="false">
         <picture>
-          <source srcset="banner2.png" type="image/webp">
-          <img class="panel-preview-img" src="banner2.png" alt="Left illustration preview">
+          <img class="panel-preview-img" src="bookturn.gif" alt="Battle Bros Volume 1 - Get the physical comic!" id="bookTurnPromo">
         </picture>
       </div>
     </aside>
@@ -2279,6 +2278,14 @@ a:focus-visible,
   // ==================== EVENT HANDLERS ====================
   
   function attachEventHandlers() {
+    // Book turn promo click handler
+    const bookTurnPromo = document.getElementById('bookTurnPromo');
+    if (bookTurnPromo) {
+      bookTurnPromo.addEventListener('click', () => {
+        window.open('https://bwondercomics.bigcartel.com/product/battle-bros-volume-1', '_blank', 'noopener,noreferrer');
+      });
+    }
+
     // Navigation buttons
     if (el.prevBtn) el.prevBtn.addEventListener('click', prevPage);
     if (el.nextBtn) el.nextBtn.addEventListener('click', nextPage);
