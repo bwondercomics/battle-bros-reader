@@ -118,9 +118,15 @@ body::before {
   position: fixed;
   inset: 0;
   background: 
-    repeating-linear-gradient(0deg, rgba(0,217,255,0.03) 0px, transparent 2px),
-    radial-gradient(circle at 20% 80%, rgba(0,217,255,0.06), transparent 40%),
-    radial-gradient(circle at 80% 20%, rgba(255,0,234,0.06), transparent 40%);
+    repeating-linear-gradient(
+      0deg, 
+      transparent 0px, 
+      transparent 2px,
+      rgba(0,217,255,0.02) 2px, 
+      rgba(0,217,255,0.02) 4px
+    ),
+    radial-gradient(circle at 20% 80%, rgba(255,237,0,0.05), transparent 40%),
+    radial-gradient(circle at 80% 20%, rgba(255,0,234,0.05), transparent 40%);
   pointer-events: none;
   z-index: 0;
 }
@@ -129,12 +135,12 @@ body::after {
   content: "";
   position: fixed;
   inset: 0;
-  background: linear-gradient(transparent 50%, rgba(0,217,255,0.02) 50%);
-  background-size: 100% 4px;
+  background: linear-gradient(transparent 50%, rgba(0,0,0,0.05) 50%);
+  background-size: 100% 3px;
   pointer-events: none;
   z-index: 1;
-  animation: scanline 8s linear infinite;
-  opacity: 0.28;
+  animation: scanline 6s linear infinite;
+  opacity: 0.4;
 }
 
 /* ==================== HEADER ==================== */
@@ -164,7 +170,7 @@ header.topbar {
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, var(--bg-panel), var(--bg-dark));
-  border: 3px solid var(--primary);
+  border: 3px solid var(--accent);
   color: var(--primary);
   font-family: 'Bebas Neue';
   font-weight: 900;
@@ -201,28 +207,42 @@ header.topbar {
 
 /* ==================== CHAPTER SELECT ==================== */
 select#chapter {
-  background: linear-gradient(135deg, rgba(0,217,255,0.1), rgba(255,0,234,0.1));
-  color: var(--accent);
-  border: 2px solid var(--accent);
-  padding: 8px 14px;
-  clip-path: polygon(6px 0%, 100% 0%, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0% 100%, 0% 6px);
-  min-width: 160px;
-  font-size: 13px;
-  font-weight: 700;
+  background: linear-gradient(135deg, rgba(0,217,255,0.15), rgba(255,0,234,0.15));
+  color: var(--text);
+  border: 3px solid var(--accent);
+  padding: 10px 16px;
+  min-width: 180px;
+  font-size: 14px;
+  font-weight: 900;
   cursor: pointer;
   transition: all 0.2s;
   text-transform: uppercase;
-  font-family: 'Righteous', sans-serif;
+  font-family: 'Bebas Neue', sans-serif;
+  box-shadow: 
+    0 4px 0 rgba(0,0,0,0.3),
+    0 0 15px rgba(255,237,0,0.3);
+  position: relative;
 }
 
 select#chapter:hover {
-  background: linear-gradient(135deg, rgba(0,217,255,0.2), rgba(255,0,234,0.2));
-  box-shadow: 0 0 15px rgba(0,217,255,0.5);
+  background: linear-gradient(135deg, rgba(0,217,255,0.25), rgba(255,0,234,0.25));
+  box-shadow: 
+    0 4px 0 rgba(0,0,0,0.3),
+    0 0 25px rgba(255,237,0,0.6);
+  transform: translateY(-2px);
+}
+
+select#chapter:active {
+  transform: translateY(0);
+  box-shadow: 
+    0 2px 0 rgba(0,0,0,0.3),
+    0 0 15px rgba(255,237,0,0.3);
 }
 
 select#chapter option {
   background: var(--bg-panel);
   color: var(--text);
+  padding: 8px;
 }
 
 /* ==================== VIEWER LAYOUT ==================== */
@@ -255,12 +275,27 @@ select#chapter option {
   max-width: 400px;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, rgba(26,26,46,0.8), rgba(10,10,18,0.8));
-  border: 3px solid var(--primary);
-  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(26,26,46,0.95), rgba(10,10,18,0.95));
+  border: 4px solid var(--primary);
+  box-shadow: 
+    0 0 20px rgba(0,217,255,0.4),
+    inset 0 4px 0 rgba(0,217,255,0.1),
+    0 8px 0 rgba(0,0,0,0.3);
   color: var(--text);
   overflow: hidden;
   z-index: 10;
+  position: relative;
+}
+
+.side-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--secondary), var(--primary));
+  z-index: 1;
 }
 
 .side-panel.left,
@@ -275,7 +310,7 @@ select#chapter option {
   align-items: center;
   justify-content: center;
   background: transparent;
-  padding: 12px;
+  padding: 16px;
 }
 
 .side-panel.left .preview .panel-preview-img {
@@ -283,9 +318,8 @@ select#chapter option {
   height: 100%;
   object-fit: contain;
   display: block;
-  border-radius: 6px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-  border: 1px solid rgba(255,255,255,0.02);
+  border: 3px solid rgba(0,217,255,0.3);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.6);
 }
 
 .side-panel.right {
@@ -310,9 +344,15 @@ select#chapter option {
   height: 100%;
   object-fit: contain;
   display: block;
-  border-radius: 6px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-  border: 1px solid rgba(255,255,255,0.02);
+  border: 3px solid rgba(0,217,255,0.3);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+  transition: transform 0.3s;
+  cursor: pointer;
+}
+
+.side-panel.right .preview .panel-preview-img:hover {
+  transform: scale(1.05);
+  border-color: var(--accent);
 }
 
 .panel-buttons {
@@ -328,44 +368,88 @@ select#chapter option {
 .panel-btn {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px;
-  background: linear-gradient(135deg, rgba(0,217,255,0.08), rgba(255,0,234,0.06));
-  border: 2px solid var(--primary);
-  border-radius: 6px;
+  gap: 14px;
+  padding: 14px;
+  background: linear-gradient(135deg, rgba(0,217,255,0.12), rgba(255,0,234,0.08));
+  border: 3px solid var(--primary);
+  border-radius: 0;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.15s;
   text-decoration: none;
   color: var(--text);
+  position: relative;
+  box-shadow: 
+    0 4px 0 rgba(0,0,0,0.3),
+    0 0 10px rgba(0,217,255,0.2);
+}
+
+.panel-btn::before {
+  content: "▶";
+  position: absolute;
+  left: -10px;
+  color: var(--accent);
+  opacity: 0;
+  transition: all 0.2s;
+  font-size: 20px;
+  text-shadow: 0 0 10px var(--accent);
 }
 
 .panel-btn:hover {
-  background: linear-gradient(135deg, rgba(0,217,255,0.15), rgba(255,0,234,0.12));
-  box-shadow: 0 0 15px rgba(0,217,255,0.3);
-  transform: translateX(-3px);
+  background: linear-gradient(135deg, rgba(0,217,255,0.2), rgba(255,0,234,0.15));
+  box-shadow: 
+    0 4px 0 rgba(0,0,0,0.4),
+    0 0 20px rgba(0,217,255,0.5);
+  transform: translateX(8px);
+  border-color: var(--accent);
+}
+
+.panel-btn:hover::before {
+  opacity: 1;
+  left: -15px;
+  animation: pixelBounce 0.6s ease-in-out infinite;
+}
+
+.panel-btn:active {
+  transform: translateX(8px) translateY(2px);
+  box-shadow: 
+    0 2px 0 rgba(0,0,0,0.4),
+    0 0 15px rgba(0,217,255,0.4);
 }
 
 .panel-btn-icon {
-  width: 48px;
-  height: 48px;
-  min-width: 48px;
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, var(--primary), var(--secondary));
-  border-radius: 4px;
-  font-size: 24px;
+  border: 3px solid var(--accent);
+  font-size: 28px;
   color: var(--bg-dark);
   font-weight: bold;
+  box-shadow: 
+    0 3px 0 rgba(0,0,0,0.4),
+    inset 0 2px 0 rgba(255,255,255,0.3);
+  position: relative;
+}
+
+.panel-btn-icon::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  background: linear-gradient(135deg, transparent, rgba(255,255,255,0.2));
 }
 
 .panel-btn-text {
   flex: 1;
   font-family: 'Bebas Neue';
-  font-size: 18px;
-  letter-spacing: 1px;
+  font-size: 20px;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--primary);
+  color: var(--text);
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+  font-weight: 900;
 }
 
 /* ==================== VIEWPORT ==================== */
@@ -377,14 +461,28 @@ select#chapter option {
   align-items: center;
   justify-content: center;
   position: relative;
-  background: linear-gradient(135deg, rgba(26,26,46,0.6), rgba(10,10,18,0.8));
-  border: 3px solid var(--primary);
-  box-shadow: 0 0 30px rgba(0,217,255,0.12);
+  background: linear-gradient(180deg, rgba(26,26,46,0.8), rgba(10,10,18,0.9));
+  border: 4px solid var(--primary);
+  box-shadow: 
+    0 0 30px rgba(0,217,255,0.3),
+    inset 0 4px 0 rgba(0,217,255,0.1),
+    0 8px 0 rgba(0,0,0,0.3);
   overflow: hidden;
   touch-action: none;
   z-index: 5;
-  /* Allow viewport to shrink to fit content */
   max-height: 100%;
+  position: relative;
+}
+
+.viewport::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--secondary), var(--primary));
+  z-index: 10;
 }
 
 body.fullscreen-active .viewport {
@@ -424,7 +522,7 @@ body.fullscreen-active main {
 
 .stage {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   align-items: center;
   justify-content: center;
   transform-origin: 50% 50%;
@@ -442,7 +540,8 @@ body.fullscreen-active main {
   background: #000;
   position: relative;
   overflow: hidden;
-  border: 2px solid rgba(0,217,255,0.06);
+  border: 3px solid rgba(0,217,255,0.2);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.7);
   max-width: 100%;
   max-height: 100%;
 }
@@ -461,13 +560,14 @@ body.fullscreen-active main {
 
 .spinner {
   position: absolute;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 3px solid transparent;
-  border-top: 3px solid var(--primary);
-  border-right: 3px solid var(--secondary);
-  animation: spin 0.9s linear infinite;
+  width: 50px;
+  height: 50px;
+  border: 4px solid transparent;
+  border-top: 4px solid var(--primary);
+  border-right: 4px solid var(--secondary);
+  border-bottom: 4px solid var(--accent);
+  animation: spin 0.8s linear infinite;
+  box-shadow: 0 0 20px rgba(0,217,255,0.5);
 }
 
 /* ==================== PAGE TRANSITIONS ==================== */
@@ -530,17 +630,37 @@ body.fullscreen-active main {
 }
 
 .edgeArrow {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
+  width: 64px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, rgba(0,217,255,0.08), rgba(255,0,234,0.06));
-  border: 2px solid rgba(0,217,255,0.12);
-  color: var(--primary);
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border: 4px solid var(--accent);
+  color: var(--bg-dark);
   cursor: pointer;
   user-select: none;
+  box-shadow: 
+    0 4px 0 rgba(0,0,0,0.5),
+    0 0 20px rgba(0,217,255,0.6);
+  transition: all 0.15s;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.edgeArrow:hover {
+  transform: scale(1.1);
+  box-shadow: 
+    0 6px 0 rgba(0,0,0,0.5),
+    0 0 30px rgba(0,217,255,0.9);
+  animation: pixelBounce 0.6s ease-in-out infinite;
+}
+
+.edgeArrow:active {
+  transform: scale(1.05) translateY(2px);
+  box-shadow: 
+    0 2px 0 rgba(0,0,0,0.5),
+    0 0 20px rgba(0,217,255,0.6);
 }
 
 /* ==================== CONTROLS ==================== */
@@ -549,16 +669,29 @@ body.fullscreen-active main {
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  padding: 12px;
+  padding: 14px;
   margin: 12px auto 16px auto;
   max-width: 2000px;
   width: 100%;
-  background: linear-gradient(135deg, rgba(26,26,46,0.9), rgba(10,10,18,0.9));
-  border: 3px solid var(--primary);
-  clip-path: polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px);
+  background: linear-gradient(180deg, rgba(26,26,46,0.98), rgba(10,10,18,0.98));
+  border: 4px solid var(--primary);
+  box-shadow: 
+    0 0 25px rgba(0,217,255,0.3),
+    inset 0 4px 0 rgba(0,217,255,0.1),
+    0 8px 0 rgba(0,0,0,0.3);
   z-index: 70;
-  box-shadow: 0 0 20px rgba(0,217,255,0.12);
   flex-shrink: 0;
+  position: relative;
+}
+
+.controls::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--secondary), var(--primary));
 }
 
 .controls .left,
@@ -569,32 +702,72 @@ body.fullscreen-active main {
 }
 
 .btn {
-  height: 44px;
-  min-width: 44px;
-  padding: 0 14px;
-  border: 2px solid var(--primary);
-  background: linear-gradient(135deg, rgba(0,217,255,0.06), rgba(255,0,234,0.04));
+  height: 48px;
+  min-width: 48px;
+  padding: 0 16px;
+  border: 3px solid var(--primary);
+  background: linear-gradient(135deg, rgba(0,217,255,0.12), rgba(255,0,234,0.08));
   color: var(--text);
   cursor: pointer;
   font-family: 'Bebas Neue';
   font-weight: 900;
   text-transform: uppercase;
+  font-size: 16px;
+  box-shadow: 
+    0 4px 0 rgba(0,0,0,0.3),
+    0 0 10px rgba(0,217,255,0.2);
+  transition: all 0.15s;
+}
+
+.btn:hover {
+  background: linear-gradient(135deg, rgba(0,217,255,0.2), rgba(255,0,234,0.15));
+  box-shadow: 
+    0 4px 0 rgba(0,0,0,0.4),
+    0 0 20px rgba(0,217,255,0.5);
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 
+    0 2px 0 rgba(0,0,0,0.4),
+    0 0 15px rgba(0,217,255,0.3);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .btn.primary {
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1;
-  padding: 6px 18px;
-  border: none;
+  padding: 8px 20px;
+  border: 3px solid var(--accent);
   color: var(--bg-dark);
-  background-image:
-    linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%),
-    repeating-linear-gradient(45deg, rgba(255,255,255,0.06) 0 3px, rgba(255,255,255,0.00) 3px 6px);
-  background-blend-mode: overlay;
-  box-shadow: 0 0 20px rgba(0,217,255,0.8);
-  border-radius: 6px;
+  background: linear-gradient(135deg, var(--accent), var(--primary));
+  box-shadow: 
+    0 4px 0 rgba(0,0,0,0.4),
+    0 0 20px rgba(255,237,0,0.6),
+    inset 0 2px 0 rgba(255,255,255,0.3);
   position: relative;
   overflow: hidden;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+  font-weight: 900;
+}
+
+.btn.primary::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  background: linear-gradient(135deg, transparent, rgba(255,255,255,0.2));
+  pointer-events: none;
+}
+
+.btn.primary:hover {
+  animation: arcadePulse 1s ease-in-out infinite;
 }
 
 body.fullscreen-active header.topbar {
@@ -631,13 +804,18 @@ body.fullscreen-active .controls.hidden {
 
 /* ==================== STATUS & PROGRESS ==================== */
 .status {
-  padding: 6px 12px;
-  background: linear-gradient(135deg, rgba(255,237,0,0.08), rgba(255,237,0,0.04));
-  border: 2px solid var(--accent);
+  padding: 8px 16px;
+  background: linear-gradient(135deg, rgba(255,237,0,0.15), rgba(255,237,0,0.08));
+  border: 3px solid var(--accent);
   color: var(--accent);
   font-family: 'Bebas Neue';
   font-weight: 900;
   text-transform: uppercase;
+  box-shadow: 
+    0 4px 0 rgba(0,0,0,0.3),
+    0 0 15px rgba(255,237,0,0.3);
+  text-shadow: 0 0 8px rgba(255,237,0,0.5);
+  font-size: 16px;
 }
 
 .progress-bar {
@@ -645,9 +823,10 @@ body.fullscreen-active .controls.hidden {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 3px;
-  background: rgba(0,217,255,0.12);
+  height: 4px;
+  background: rgba(0,0,0,0.5);
   z-index: 50;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
 }
 
 .progress-fill {
@@ -655,7 +834,21 @@ body.fullscreen-active .controls.hidden {
   width: 0%;
   transition: width 0.28s ease-out;
   background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
-  box-shadow: 0 0 8px rgba(0,217,255,0.08);
+  box-shadow: 
+    0 0 10px rgba(0,217,255,0.8),
+    0 0 20px rgba(255,0,234,0.5);
+  position: relative;
+}
+
+.progress-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 100%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
 }
 
 /* ==================== RESPONSIVE ==================== */
@@ -713,7 +906,7 @@ a:focus-visible,
 .shortcuts-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(10, 10, 18, 0.95);
+  background: rgba(10, 10, 18, 0.97);
   backdrop-filter: blur(10px);
   z-index: 300;
   display: none;
@@ -727,23 +920,41 @@ a:focus-visible,
 }
 
 .shortcuts-panel {
-  background: linear-gradient(135deg, rgba(26,26,46,0.95), rgba(10,10,18,0.95));
-  border: 3px solid var(--primary);
-  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(26,26,46,0.98), rgba(10,10,18,0.98));
+  border: 4px solid var(--primary);
   padding: 32px;
   max-width: 600px;
   width: 100%;
   max-height: 80vh;
   overflow-y: auto;
-  box-shadow: 0 0 40px rgba(0,217,255,0.3);
+  box-shadow: 
+    0 0 40px rgba(0,217,255,0.5),
+    inset 0 4px 0 rgba(0,217,255,0.1),
+    0 12px 0 rgba(0,0,0,0.5);
+  position: relative;
+}
+
+.shortcuts-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--secondary), var(--primary));
+  z-index: 1;
 }
 
 .shortcuts-panel h2 {
   margin: 0 0 24px 0;
-  font-size: 32px;
+  font-size: 36px;
   color: var(--primary);
   font-family: 'Bebas Neue';
-  letter-spacing: 2px;
+  letter-spacing: 3px;
+  text-shadow: 
+    3px 3px 0 rgba(0,0,0,0.5),
+    0 0 20px rgba(0,217,255,0.5);
+  text-transform: uppercase;
 }
 
 .shortcuts-grid {
@@ -756,53 +967,71 @@ a:focus-visible,
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px;
-  background: linear-gradient(135deg, rgba(0,217,255,0.08), rgba(255,0,234,0.06));
-  border: 1px solid rgba(0,217,255,0.2);
-  border-radius: 6px;
+  padding: 14px;
+  background: linear-gradient(135deg, rgba(0,217,255,0.1), rgba(255,0,234,0.08));
+  border: 3px solid rgba(0,217,255,0.3);
+  box-shadow: 0 4px 0 rgba(0,0,0,0.3);
 }
 
 .shortcut-key {
-  background: var(--bg-dark);
-  border: 2px solid var(--accent);
-  padding: 4px 12px;
-  border-radius: 4px;
+  background: linear-gradient(135deg, var(--bg-dark), var(--bg-panel));
+  border: 3px solid var(--accent);
+  padding: 6px 14px;
   font-family: 'Bebas Neue';
   color: var(--accent);
-  font-size: 16px;
-  min-width: 80px;
+  font-size: 18px;
+  min-width: 90px;
   text-align: center;
+  box-shadow: 
+    0 3px 0 rgba(0,0,0,0.4),
+    0 0 10px rgba(255,237,0,0.3);
+  font-weight: 900;
 }
 
 .shortcut-desc {
   flex: 1;
   margin-left: 16px;
   color: var(--text);
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 .shortcuts-close {
   width: 100%;
-  padding: 12px;
-  background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
+  padding: 14px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
   color: var(--bg-dark);
-  border: none;
-  border-radius: 6px;
+  border: 3px solid var(--accent);
   font-family: 'Bebas Neue';
-  font-size: 18px;
+  font-size: 20px;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: all 0.2s;
+  box-shadow: 
+    0 4px 0 rgba(0,0,0,0.4),
+    0 0 20px rgba(0,217,255,0.5);
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
 .shortcuts-close:hover {
-  transform: scale(1.02);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 6px 0 rgba(0,0,0,0.4),
+    0 0 30px rgba(0,217,255,0.8);
+}
+
+.shortcuts-close:active {
+  transform: translateY(0);
+  box-shadow: 
+    0 2px 0 rgba(0,0,0,0.4),
+    0 0 20px rgba(0,217,255,0.5);
 }
 
 /* End of chapter overlay */
 .chapter-end-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(10,10,18,0.98), rgba(26,26,46,0.98));
+  background: linear-gradient(180deg, rgba(10,10,18,0.98), rgba(26,26,46,0.98));
   backdrop-filter: blur(8px);
   z-index: 35;
   display: none;
@@ -824,15 +1053,38 @@ a:focus-visible,
 .chapter-end-content {
   text-align: center;
   max-width: 500px;
+  padding: 32px;
+  background: linear-gradient(180deg, rgba(26,26,46,0.9), rgba(10,10,18,0.9));
+  border: 4px solid var(--accent);
+  box-shadow: 
+    0 0 40px rgba(255,237,0,0.5),
+    inset 0 4px 0 rgba(255,237,0,0.1),
+    0 12px 0 rgba(0,0,0,0.5);
+  position: relative;
+}
+
+.chapter-end-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--secondary), var(--primary));
+  z-index: 1;
 }
 
 .chapter-end-content h2 {
   font-family: 'Bebas Neue';
-  font-size: 48px;
-  color: var(--primary);
+  font-size: 52px;
+  color: var(--accent);
   margin: 0 0 16px 0;
-  letter-spacing: 3px;
-  text-shadow: 0 0 20px rgba(0,217,255,0.5);
+  letter-spacing: 4px;
+  text-shadow: 
+    4px 4px 0 rgba(0,0,0,0.5),
+    0 0 30px rgba(255,237,0,0.8);
+  text-transform: uppercase;
+  animation: pixelBounce 2s ease-in-out infinite;
 }
 
 .chapter-end-content p {
@@ -840,6 +1092,7 @@ a:focus-visible,
   color: var(--text);
   margin: 0 0 32px 0;
   line-height: 1.6;
+  font-weight: 600;
 }
 
 .chapter-end-buttons {
@@ -850,30 +1103,41 @@ a:focus-visible,
 }
 
 .chapter-end-btn {
-  padding: 12px 24px;
-  border: 2px solid var(--primary);
-  background: linear-gradient(135deg, rgba(0,217,255,0.1), rgba(255,0,234,0.08));
+  padding: 14px 24px;
+  border: 3px solid var(--primary);
+  background: linear-gradient(135deg, rgba(0,217,255,0.12), rgba(255,0,234,0.08));
   color: var(--text);
   font-family: 'Bebas Neue';
-  font-size: 16px;
+  font-size: 18px;
   cursor: pointer;
-  border-radius: 6px;
   transition: all 0.2s;
   text-decoration: none;
   display: inline-block;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.4);
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
 .chapter-end-btn:hover {
   background: linear-gradient(135deg, rgba(0,217,255,0.2), rgba(255,0,234,0.15));
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0,217,255,0.3);
+  box-shadow: 
+    0 6px 0 rgba(0,0,0,0.4),
+    0 0 20px rgba(0,217,255,0.5);
+}
+
+.chapter-end-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 0 rgba(0,0,0,0.4);
 }
 
 .chapter-end-btn.primary {
-  background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
+  background: linear-gradient(135deg, var(--accent), var(--primary));
   color: var(--bg-dark);
-  border: none;
-  box-shadow: 0 0 20px rgba(0,217,255,0.5);
+  border: 3px solid var(--accent);
+  box-shadow: 
+    0 4px 0 rgba(0,0,0,0.5),
+    0 0 25px rgba(255,237,0,0.6);
 }
 
 /* Aspect ratio ~7:5 (1.4) or narrower - move panels below viewport */
@@ -1031,8 +1295,7 @@ a:focus-visible,
     <aside class="side-panel left" id="leftPanel">
       <div class="preview" id="leftPreview" aria-hidden="false">
         <picture>
-          <source srcset="panel.png" type="image/webp">
-          <img class="panel-preview-img" src="panel.png" alt="Left illustration preview">
+          <img class="panel-preview-img" src="bookturn.gif" alt="Battle Bros Volume 1 - Get the physical comic!" id="bookTurnPromo">
         </picture>
       </div>
     </aside>
@@ -1085,21 +1348,21 @@ a:focus-visible,
         </picture>
       </div>
       <div class="panel-buttons">
-        <a href="#" class="panel-btn" id="customBtn1">
-          <div class="panel-btn-icon">1</div>
-          <div class="panel-btn-text">Button One</div>
+        <a href="https://bsky.app/profile/bwondercomics.com" target="_blank" rel="noopener noreferrer" class="panel-btn" id="customBtn1">
+          <div class="panel-btn-icon">🦋</div>
+          <div class="panel-btn-text">Bluesky</div>
         </a>
-        <a href="#" class="panel-btn" id="customBtn2">
-          <div class="panel-btn-icon">2</div>
-          <div class="panel-btn-text">Button Two</div>
+        <a href="https://patreon.com/doylemelville2" target="_blank" rel="noopener noreferrer" class="panel-btn" id="customBtn2">
+          <div class="panel-btn-icon">💎</div>
+          <div class="panel-btn-text">Patreon</div>
         </a>
-        <a href="#" class="panel-btn" id="customBtn3">
-          <div class="panel-btn-icon">3</div>
-          <div class="panel-btn-text">Button Three</div>
+        <a href="https://doyle-melvilleii.artstation.com" target="_blank" rel="noopener noreferrer" class="panel-btn" id="customBtn3">
+          <div class="panel-btn-icon">🎨</div>
+          <div class="panel-btn-text">ArtStation</div>
         </a>
-        <a href="#" class="panel-btn" id="customBtn4">
-          <div class="panel-btn-icon">4</div>
-          <div class="panel-btn-text">Button Four</div>
+        <a href="https://bwondercomics.bigcartel.com/product/battle-bros-volume-1" target="_blank" rel="noopener noreferrer" class="panel-btn" id="customBtn4">
+          <div class="panel-btn-icon">📖</div>
+          <div class="panel-btn-text">Buy Print</div>
         </a>
       </div>
     </aside>
@@ -2015,6 +2278,14 @@ a:focus-visible,
   // ==================== EVENT HANDLERS ====================
   
   function attachEventHandlers() {
+    // Book turn promo click handler
+    const bookTurnPromo = document.getElementById('bookTurnPromo');
+    if (bookTurnPromo) {
+      bookTurnPromo.addEventListener('click', () => {
+        window.open('https://bwondercomics.bigcartel.com/product/battle-bros-volume-1', '_blank', 'noopener,noreferrer');
+      });
+    }
+
     // Navigation buttons
     if (el.prevBtn) el.prevBtn.addEventListener('click', prevPage);
     if (el.nextBtn) el.nextBtn.addEventListener('click', nextPage);
