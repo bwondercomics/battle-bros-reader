@@ -1983,7 +1983,7 @@ a:focus-visible,
 
   function fitHeightFullscreen() {
     const img = el.leftImg;
-    if (!img || !img.naturalHeight) {
+    if (!img || !img.complete || !img.naturalHeight) {
       state.scale = 1;
       state.pan = { x: 0, y: 0 };
       applyTransform();
@@ -1998,10 +1998,9 @@ a:focus-visible,
     }
 
     const vpHeight = el.viewport.clientHeight;
-    const imgNaturalHeight = img.naturalHeight;
     
     // Calculate scale to fit height to viewport
-    let targetScale = vpHeight / imgNaturalHeight;
+    let targetScale = vpHeight / img.naturalHeight;
     targetScale = Math.max(CONFIG.ZOOM_MIN, Math.min(CONFIG.ZOOM_MAX, targetScale));
     
     state.scale = targetScale;
