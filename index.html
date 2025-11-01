@@ -1158,38 +1158,39 @@ a:focus-visible,
   .viewerWrap {
     order: 1;
     flex: 0 0 100%;
-    flex-direction: row;
-    flex-wrap: wrap;
-    padding: 12px;
-    gap: 12px;
+    flex-direction: column;
+    padding: 12px 12px 0 12px;
+    gap: 0;
   }
   
   .viewport {
+    order: 1;
     width: 100%;
     height: auto;
     aspect-ratio: auto;
     min-height: 50vh;
-    flex: 0 0 100%;
+    flex: 0 0 auto;
+    margin-bottom: 12px;
   }
 
-  .controls {
-    order: 2;
-    flex: 0 0 100%;
-    margin: 0 12px 12px 12px;
-  }
-
-  /* Side panels in 2 columns below controls */
+  /* Side panels AFTER viewport but INSIDE viewerWrap */
   .side-panel {
     order: 3;
     width: calc(50% - 6px);
     max-width: none;
     min-height: 250px;
-    flex: 0 0 calc(50% - 6px);
+    flex: 0 0 auto;
     height: auto;
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  .side-panel.left {
+    margin-right: 12px;
   }
 
   .side-panel.left .preview {
-    height: 100%;
+    height: 250px;
   }
   
   .side-panel.right {
@@ -1214,6 +1215,13 @@ a:focus-visible,
   .panel-btn {
     flex: 1 1 auto;
     min-width: auto;
+  }
+
+  /* Controls AFTER viewerWrap */
+  .controls {
+    order: 2;
+    flex: 0 0 100%;
+    margin: 0 12px 12px 12px;
   }
   
   .edgeZone {
@@ -1976,7 +1984,8 @@ a:focus-visible,
 
   function fitHeightFullscreen() {
     const img = el.leftImg;
-    if (!img || !img.complete || !img.naturalHeight) {
+    const stage = el.stage;
+    if (!img || !img.complete || !img.naturalHeight || !stage) {
       state.scale = 1;
       state.pan = { x: 0, y: 0 };
       applyTransform();
@@ -1993,11 +2002,16 @@ a:focus-visible,
     const vpWidth = el.viewport.clientWidth;
     const vpHeight = el.viewport.clientHeight;
     
-    // Calculate scale to fit image to fill the viewport (like object-fit: contain)
-    const scaleToFitWidth = vpWidth / img.naturalWidth;
-    const scaleToFitHeight = vpHeight / img.naturalHeight;
+    // Get the actual rendered size of the stage (which contains the images)
+    const stageBounds = stage.getBoundingClientRect();
+    const stageWidth = stageBounds.width / state.scale; // Get unscaled width
+    const stageHeight = stageBounds.height / state.scale; // Get unscaled height
     
-    // Use the smaller scale to ensure the entire image fits within viewport
+    // Calculate scale to fit the ENTIRE stage to viewport
+    const scaleToFitWidth = vpWidth / stageWidth;
+    const scaleToFitHeight = vpHeight / stageHeight;
+    
+    // Use the smaller scale to ensure everything fits
     let targetScale = Math.min(scaleToFitWidth, scaleToFitHeight);
     targetScale = Math.max(CONFIG.ZOOM_MIN, Math.min(CONFIG.ZOOM_MAX, targetScale));
     
