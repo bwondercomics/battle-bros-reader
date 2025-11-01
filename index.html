@@ -1151,9 +1151,13 @@ a:focus-visible,
   main {
     height: auto;
     overflow: visible;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 
   .viewerWrap {
+    order: 1;
+    flex: 0 0 100%;
     flex-direction: row;
     flex-wrap: wrap;
     padding: 12px;
@@ -1161,7 +1165,6 @@ a:focus-visible,
   }
   
   .viewport {
-    order: 1;
     width: 100%;
     height: auto;
     aspect-ratio: auto;
@@ -1169,20 +1172,15 @@ a:focus-visible,
     flex: 0 0 100%;
   }
 
-  .viewer-content-wrapper {
-    order: 1;
-    flex: 0 0 100%;
-  }
-
   .controls {
     order: 2;
-    margin: 0;
-    width: 100%;
     flex: 0 0 100%;
+    margin: 0 12px 12px 12px;
   }
 
   /* Side panels in 2 columns below controls */
   .side-panel {
+    order: 3;
     width: calc(50% - 6px);
     max-width: none;
     min-height: 250px;
@@ -1190,16 +1188,11 @@ a:focus-visible,
     height: auto;
   }
 
-  .side-panel.left {
-    order: 3;
-  }
-
   .side-panel.left .preview {
     height: 100%;
   }
   
   .side-panel.right {
-    order: 4;
     flex-direction: column;
     padding: 16px;
   }
@@ -1994,13 +1987,18 @@ a:focus-visible,
       if (state.prevTransformOrigin === null) {
         state.prevTransformOrigin = window.getComputedStyle(el.stage).transformOrigin || '50% 50%';
       }
-      el.stage.style.transformOrigin = 'top center';
+      el.stage.style.transformOrigin = 'center center';
     }
 
+    const vpWidth = el.viewport.clientWidth;
     const vpHeight = el.viewport.clientHeight;
     
-    // Calculate scale to fit height to viewport
-    let targetScale = vpHeight / img.naturalHeight;
+    // Calculate scale to fit image to fill the viewport (like object-fit: contain)
+    const scaleToFitWidth = vpWidth / img.naturalWidth;
+    const scaleToFitHeight = vpHeight / img.naturalHeight;
+    
+    // Use the smaller scale to ensure the entire image fits within viewport
+    let targetScale = Math.min(scaleToFitWidth, scaleToFitHeight);
     targetScale = Math.max(CONFIG.ZOOM_MIN, Math.min(CONFIG.ZOOM_MAX, targetScale));
     
     state.scale = targetScale;
