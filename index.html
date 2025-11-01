@@ -310,13 +310,13 @@ select#chapter option {
   align-items: center;
   justify-content: center;
   background: transparent;
-  padding: 16px;
+  padding: 8px;
 }
 
 .side-panel.left .preview .panel-preview-img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   display: block;
   border: 3px solid rgba(0,217,255,0.3);
   box-shadow: 0 8px 20px rgba(0,0,0,0.6);
@@ -1154,7 +1154,8 @@ a:focus-visible,
   }
 
   .viewerWrap {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     padding: 12px;
     gap: 12px;
   }
@@ -1165,51 +1166,61 @@ a:focus-visible,
     height: auto;
     aspect-ratio: auto;
     min-height: 50vh;
+    flex: 0 0 100%;
+  }
+
+  .viewer-content-wrapper {
+    order: 1;
+    flex: 0 0 100%;
   }
 
   .controls {
     order: 2;
-    margin: 0 12px 12px 12px;
+    margin: 0;
+    width: 100%;
+    flex: 0 0 100%;
   }
 
+  /* Side panels in 2 columns below controls */
   .side-panel {
-    width: 100%;
+    width: calc(50% - 6px);
     max-width: none;
-    min-height: auto;
-    flex: 0 0 auto;
+    min-height: 250px;
+    flex: 0 0 calc(50% - 6px);
+    height: auto;
   }
 
   .side-panel.left {
     order: 3;
-    height: 200px;
+  }
+
+  .side-panel.left .preview {
+    height: 100%;
   }
   
   .side-panel.right {
     order: 4;
-    flex-direction: row;
-    flex-wrap: wrap;
-    padding: 12px;
-    height: auto;
-    min-height: 180px;
+    flex-direction: column;
+    padding: 16px;
   }
   
   .side-panel.right .preview {
-    flex: 1 1 40%;
-    min-width: 200px;
+    flex: 0 0 auto;
+    width: 100%;
     max-height: none;
-    height: 180px;
+    height: 140px;
   }
   
   .panel-buttons {
-    flex: 1 1 55%;
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex: 1 1 auto;
+    flex-direction: column;
     padding: 0;
+    gap: 8px;
   }
   
   .panel-btn {
-    flex: 1 1 calc(50% - 6px);
-    min-width: 140px;
+    flex: 1 1 auto;
+    min-width: auto;
   }
   
   .edgeZone {
@@ -1912,7 +1923,7 @@ a:focus-visible,
     const isAtEnd = state.pageIndex >= total - 1;
     
     if (rightIsLast || isAtEnd) {
-      // Show end of chapter overlay
+      // Show end of chapter overlay only when trying to go past the last page
       showEndOfChapter();
       return;
     }
@@ -1930,14 +1941,6 @@ a:focus-visible,
       state.pageIndex = newIndex;
       render();
       saveProgress();
-      
-      // Check if we just loaded the last page
-      const nowAtEnd = state.pageIndex >= total - 1;
-      const nowRightIsLast = twoPageMode && state.pageIndex + 1 === total - 1;
-      if (nowAtEnd || nowRightIsLast) {
-        // Delay showing overlay slightly so user sees last page first
-        setTimeout(() => showEndOfChapter(), 800);
-      }
     });
   }
 
@@ -1980,8 +1983,9 @@ a:focus-visible,
 
   function fitHeightFullscreen() {
     const img = el.leftImg;
-    if (!img) {
+    if (!img || !img.naturalHeight) {
       state.scale = 1;
+      state.pan = { x: 0, y: 0 };
       applyTransform();
       return;
     }
@@ -1994,37 +1998,15 @@ a:focus-visible,
     }
 
     const vpHeight = el.viewport.clientHeight;
-
-    const doFit = () => {
-      const rect = img.getBoundingClientRect();
-      const baseHeight = rect.height || img.naturalHeight || img.height || 1;
-      let targetScale = vpHeight / baseHeight;
-      targetScale = Math.max(CONFIG.ZOOM_MIN, Math.min(CONFIG.ZOOM_MAX, targetScale));
-      
-      state.scale = targetScale;
-      state.pan = { x: 0, y: 0 };
-      applyTransform();
-    };
-
-    const prevScale = state.scale;
-    const prevPan = { ...state.pan };
+    const imgNaturalHeight = img.naturalHeight;
     
-    state.scale = 1;
+    // Calculate scale to fit height to viewport
+    let targetScale = vpHeight / imgNaturalHeight;
+    targetScale = Math.max(CONFIG.ZOOM_MIN, Math.min(CONFIG.ZOOM_MAX, targetScale));
+    
+    state.scale = targetScale;
     state.pan = { x: 0, y: 0 };
     applyTransform();
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        try {
-          doFit();
-        } catch (e) {
-          console.error('Fit error:', e);
-          state.scale = prevScale;
-          state.pan = prevPan;
-          applyTransform();
-        }
-      });
-    });
   }
 
   // ==================== POINTER INTERACTIONS ====================
