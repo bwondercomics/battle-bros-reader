@@ -1156,11 +1156,12 @@ a:focus-visible,
   }
 
   .viewerWrap {
-    order: 1;
+    order: 2;
     flex: 0 0 100%;
-    flex-direction: column;
-    padding: 12px 12px 0 12px;
-    gap: 0;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 12px;
+    gap: 12px;
   }
   
   .viewport {
@@ -1169,28 +1170,25 @@ a:focus-visible,
     height: auto;
     aspect-ratio: auto;
     min-height: 50vh;
-    flex: 0 0 auto;
-    margin-bottom: 12px;
+    flex: 0 0 100%;
   }
 
-  /* Side panels AFTER viewport but INSIDE viewerWrap */
+  /* Side panels in 2 columns, inside viewerWrap but AFTER viewport */
   .side-panel {
-    order: 3;
+    order: 2;
     width: calc(50% - 6px);
     max-width: none;
     min-height: 250px;
     flex: 0 0 auto;
     height: auto;
-    display: inline-block;
-    vertical-align: top;
   }
 
   .side-panel.left {
-    margin-right: 12px;
+    margin-right: 0;
   }
 
   .side-panel.left .preview {
-    height: 250px;
+    height: 100%;
   }
   
   .side-panel.right {
@@ -1217,9 +1215,9 @@ a:focus-visible,
     min-width: auto;
   }
 
-  /* Controls AFTER viewerWrap */
+  /* Controls BEFORE viewerWrap */
   .controls {
-    order: 2;
+    order: 1;
     flex: 0 0 100%;
     margin: 0 12px 12px 12px;
   }
@@ -2002,10 +2000,19 @@ a:focus-visible,
     const vpWidth = el.viewport.clientWidth;
     const vpHeight = el.viewport.clientHeight;
     
-    // Get the actual rendered size of the stage (which contains the images)
+    // Temporarily reset scale to 1 to get true dimensions
+    const prevScale = state.scale;
+    state.scale = 1;
+    state.pan = { x: 0, y: 0 };
+    applyTransform();
+    
+    // Force a reflow to get accurate measurements
+    void stage.offsetHeight;
+    
+    // Get the actual rendered size of the stage at scale 1
     const stageBounds = stage.getBoundingClientRect();
-    const stageWidth = stageBounds.width / state.scale; // Get unscaled width
-    const stageHeight = stageBounds.height / state.scale; // Get unscaled height
+    const stageWidth = stageBounds.width;
+    const stageHeight = stageBounds.height;
     
     // Calculate scale to fit the ENTIRE stage to viewport
     const scaleToFitWidth = vpWidth / stageWidth;
