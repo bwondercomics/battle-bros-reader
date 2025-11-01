@@ -1155,6 +1155,7 @@ a:focus-visible,
     flex-wrap: wrap;
   }
 
+  /* ViewerWrap contains only viewport, order: 1 */
   .viewerWrap {
     order: 1;
     flex: 0 0 100%;
@@ -1165,7 +1166,6 @@ a:focus-visible,
   }
   
   .viewport {
-    order: 1;
     width: 100%;
     height: auto;
     aspect-ratio: auto;
@@ -1174,18 +1174,30 @@ a:focus-visible,
     margin-bottom: 0;
   }
 
-  /* Side panels in 2 columns, inside viewerWrap but AFTER viewport */
-  .side-panel {
+  /* Controls come AFTER viewerWrap, order: 2 */
+  .controls {
     order: 2;
+    flex: 0 0 100%;
+    margin: 12px 12px 12px 12px;
+  }
+
+  /* Side panels come AFTER controls, order: 3, displayed as 2 columns */
+  .side-panel {
+    order: 3;
     width: calc(50% - 6px);
     max-width: none;
     min-height: 250px;
     flex: 0 0 auto;
     height: auto;
+    margin: 0 6px 12px 6px;
   }
 
   .side-panel.left {
-    margin-right: 0;
+    margin-left: 12px;
+  }
+
+  .side-panel.right {
+    margin-right: 12px;
   }
 
   .side-panel.left .preview {
@@ -1214,13 +1226,6 @@ a:focus-visible,
   .panel-btn {
     flex: 1 1 auto;
     min-width: auto;
-  }
-
-  /* Controls AFTER viewerWrap (below viewport and side panels) */
-  .controls {
-    order: 2;
-    flex: 0 0 100%;
-    margin: 12px 12px 12px 12px;
   }
   
   .edgeZone {
