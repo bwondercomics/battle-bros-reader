@@ -2001,10 +2001,16 @@ a:focus-visible,
     const vpHeight = el.viewport.clientHeight;
     
     // Temporarily reset scale to 1 to get true dimensions
-    const prevScale = state.scale;
+    // Apply transform SYNCHRONOUSLY, not via RAF
     state.scale = 1;
     state.pan = { x: 0, y: 0 };
-    applyTransform();
+    
+    // Cancel any pending RAF and apply transform immediately
+    if (state.rafId) {
+      cancelAnimationFrame(state.rafId);
+      state.rafId = null;
+    }
+    stage.style.transform = `translate(${state.pan.x}px, ${state.pan.y}px) scale(${state.scale})`;
     
     // Force a reflow to get accurate measurements
     void stage.offsetHeight;
