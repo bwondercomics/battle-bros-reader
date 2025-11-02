@@ -1159,8 +1159,14 @@ a:focus-visible,
     gap: 12px;
   }
   
-  .viewport {
+  /* Wrapper contains viewport + controls, ordered as a unit in mobile layout */
+  .viewer-content-wrapper {
     order: 1;
+    width: 100%;
+  }
+
+  /* Viewport and controls use natural document flow within wrapper */
+  .viewport {
     width: 100%;
     height: auto;
     aspect-ratio: auto;
@@ -1168,7 +1174,6 @@ a:focus-visible,
   }
 
   .controls {
-    order: 2;
     margin: 0 12px 12px 12px;
   }
 
@@ -1180,12 +1185,12 @@ a:focus-visible,
   }
 
   .side-panel.left {
-    order: 3;
+    order: 2;
     height: 200px;
   }
   
   .side-panel.right {
-    order: 4;
+    order: 3;
     flex-direction: row;
     flex-wrap: wrap;
     padding: 12px;
@@ -1300,6 +1305,9 @@ a:focus-visible,
       </div>
     </aside>
 
+    <!-- Viewport and Controls Wrapper -->
+    <div class="viewer-content-wrapper">
+
     <!-- Main Viewport -->
     <section class="viewport" id="viewport" tabindex="0" aria-label="Comic viewport">
       <div class="stageWrap" id="stageWrap">
@@ -1339,6 +1347,24 @@ a:focus-visible,
       </div>
     </section>
 
+    <!-- ==================== CONTROLS ==================== -->
+    <div class="controls" id="controls" role="toolbar" aria-label="Reader controls">
+      <div class="left">
+        <button class="btn" id="prevBtn" type="button" aria-label="Previous page">◀ BACK</button>
+        <button class="btn" id="nextBtn" type="button" aria-label="Next page">NEXT ▶</button>
+        <span class="status" id="pageIndicator" aria-live="polite">PAGE 0 / 0</span>
+      </div>
+      <div class="right">
+        <button class="btn" id="helpBtn" type="button" aria-label="Show keyboard shortcuts" title="Keyboard shortcuts (?)">?</button>
+        <button class="btn" id="zoomOut" type="button" aria-label="Zoom out">−</button>
+        <button class="btn primary" id="fitBtn" type="button" aria-label="Fit">⚡ FIT</button>
+        <button class="btn" id="zoomIn" type="button" aria-label="Zoom in">+</button>
+        <button class="btn" id="fullscreenBtn" type="button" aria-label="Toggle fullscreen">⛶</button>
+      </div>
+    </div>
+
+    </div><!-- End viewer-content-wrapper -->
+
     <!-- Right Preview Panel -->
     <aside class="side-panel right" id="rightPanel">
       <div class="preview" id="rightPreview" aria-hidden="false">
@@ -1367,22 +1393,6 @@ a:focus-visible,
       </div>
     </aside>
 
-  </div>
-
-  <!-- ==================== CONTROLS ==================== -->
-  <div class="controls" id="controls" role="toolbar" aria-label="Reader controls">
-    <div class="left">
-      <button class="btn" id="prevBtn" type="button" aria-label="Previous page">◀ BACK</button>
-      <button class="btn" id="nextBtn" type="button" aria-label="Next page">NEXT ▶</button>
-      <span class="status" id="pageIndicator" aria-live="polite">PAGE 0 / 0</span>
-    </div>
-    <div class="right">
-      <button class="btn" id="helpBtn" type="button" aria-label="Show keyboard shortcuts" title="Keyboard shortcuts (?)">?</button>
-      <button class="btn" id="zoomOut" type="button" aria-label="Zoom out">−</button>
-      <button class="btn primary" id="fitBtn" type="button" aria-label="Fit">⚡ FIT</button>
-      <button class="btn" id="zoomIn" type="button" aria-label="Zoom in">+</button>
-      <button class="btn" id="fullscreenBtn" type="button" aria-label="Toggle fullscreen">⛶</button>
-    </div>
   </div>
 </main>
 
