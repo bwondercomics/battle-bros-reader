@@ -1930,14 +1930,6 @@ a:focus-visible,
       state.pageIndex = newIndex;
       render();
       saveProgress();
-      
-      // Check if we just loaded the last page
-      const nowAtEnd = state.pageIndex >= total - 1;
-      const nowRightIsLast = twoPageMode && state.pageIndex + 1 === total - 1;
-      if (nowAtEnd || nowRightIsLast) {
-        // Delay showing overlay slightly so user sees last page first
-        setTimeout(() => showEndOfChapter(), 800);
-      }
     });
   }
 
@@ -1980,8 +1972,10 @@ a:focus-visible,
 
   function fitHeightFullscreen() {
     const img = el.leftImg;
-    if (!img) {
+    const stage = el.stage;
+    if (!img || !img.complete || !img.naturalHeight || !stage) {
       state.scale = 1;
+      state.pan = { x: 0, y: 0 };
       applyTransform();
       return;
     }
@@ -1990,41 +1984,37 @@ a:focus-visible,
       if (state.prevTransformOrigin === null) {
         state.prevTransformOrigin = window.getComputedStyle(el.stage).transformOrigin || '50% 50%';
       }
-      el.stage.style.transformOrigin = 'top center';
+      el.stage.style.transformOrigin = 'center center';
     }
 
+    const vpWidth = el.viewport.clientWidth;
     const vpHeight = el.viewport.clientHeight;
-
-    const doFit = () => {
-      const rect = img.getBoundingClientRect();
-      const baseHeight = rect.height || img.naturalHeight || img.height || 1;
-      let targetScale = vpHeight / baseHeight;
-      targetScale = Math.max(CONFIG.ZOOM_MIN, Math.min(CONFIG.ZOOM_MAX, targetScale));
-      
-      state.scale = targetScale;
-      state.pan = { x: 0, y: 0 };
-      applyTransform();
-    };
-
-    const prevScale = state.scale;
-    const prevPan = { ...state.pan };
     
+    // Temporarily reset scale to 1 to get true dimensions
+    const prevScale = state.scale;
     state.scale = 1;
     state.pan = { x: 0, y: 0 };
     applyTransform();
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        try {
-          doFit();
-        } catch (e) {
-          console.error('Fit error:', e);
-          state.scale = prevScale;
-          state.pan = prevPan;
-          applyTransform();
-        }
-      });
-    });
+    
+    // Force a reflow to get accurate measurements
+    void stage.offsetHeight;
+    
+    // Get the actual rendered size of the stage at scale 1
+    const stageBounds = stage.getBoundingClientRect();
+    const stageWidth = stageBounds.width;
+    const stageHeight = stageBounds.height;
+    
+    // Calculate scale to fit the ENTIRE stage to viewport
+    const scaleToFitWidth = vpWidth / stageWidth;
+    const scaleToFitHeight = vpHeight / stageHeight;
+    
+    // Use the smaller scale to ensure everything fits
+    let targetScale = Math.min(scaleToFitWidth, scaleToFitHeight);
+    targetScale = Math.max(CONFIG.ZOOM_MIN, Math.min(CONFIG.ZOOM_MAX, targetScale));
+    
+    state.scale = targetScale;
+    state.pan = { x: 0, y: 0 };
+    applyTransform();
   }
 
   // ==================== POINTER INTERACTIONS ====================
