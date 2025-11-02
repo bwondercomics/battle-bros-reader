@@ -1159,11 +1159,13 @@ a:focus-visible,
     gap: 12px;
   }
   
+  /* Wrapper contains viewport + controls, ordered as a unit in mobile layout */
   .viewer-content-wrapper {
     order: 1;
     width: 100%;
   }
 
+  /* Viewport and controls use natural document flow within wrapper */
   .viewport {
     width: 100%;
     height: auto;
