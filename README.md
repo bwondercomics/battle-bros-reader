@@ -3,7 +3,7 @@ Battle Bros comic reader
 
 ## About
 
-A retro-styled, cyberpunk-themed web comic reader built for the Battle Bros comic series. Features smooth page transitions, zoom/pan functionality, and a responsive design that works great on all devices.
+bwondercomics official website, and Battle Bros comic reader 
 
 ## AI Agent Collaboration
 
