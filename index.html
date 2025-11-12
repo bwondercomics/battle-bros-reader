@@ -1333,7 +1333,8 @@ a:focus-visible,
   }
 
   .viewerWrap {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     padding: 12px;
     gap: 12px;
   }
@@ -1342,6 +1343,7 @@ a:focus-visible,
   .viewer-content-wrapper {
     order: 1;
     width: 100%;
+    flex: 0 0 100%;
   }
 
   /* Viewport and controls use natural document flow within wrapper */
@@ -1353,19 +1355,33 @@ a:focus-visible,
   }
 
   .controls {
-    margin: 0 12px 12px 12px;
+    margin: 12px 0 12px 0;
+    padding: 12px 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-width: 100%;
+    border-width: 3px;
+  }
+  
+  .controls .left,
+  .controls .right {
+    gap: 6px;
   }
 
   .side-panel {
-    width: 100%;
-    max-width: none;
+    width: calc(50% - 6px) !important;
+    min-width: 0 !important;
+    max-width: none !important;
     min-height: auto;
-    flex: 0 0 auto;
+    flex: 0 0 calc(50% - 6px) !important;
   }
 
   .side-panel.left {
     order: 2;
-    height: 220px;
+    height: auto;
+    min-height: 580px;
+    align-self: stretch;
   }
 
   .side-panel.left .left-panel-content {
@@ -1407,30 +1423,29 @@ a:focus-visible,
   
   .side-panel.right {
     order: 3;
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
     padding: 12px;
     height: auto;
-    min-height: 180px;
+    min-height: 320px;
+    align-self: stretch;
   }
   
   .side-panel.right .preview {
-    flex: 1 1 40%;
-    min-width: 200px;
+    width: 100%;
     max-height: none;
-    height: 180px;
+    height: 140px;
+    margin-bottom: 12px;
   }
   
   .panel-buttons {
-    flex: 1 1 55%;
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
     padding: 0;
+    gap: 8px;
   }
   
   .panel-btn {
-    flex: 1 1 calc(50% - 6px);
-    min-width: 140px;
+    flex: 1 1 auto;
+    width: 100%;
   }
   
   .edgeZone {
@@ -1500,20 +1515,30 @@ a:focus-visible,
     flex: 1 1 auto;
   }
 
-  .controls .left,
-  .controls .right {
+  .controls {
+    padding: 8px 4px;
     gap: 4px;
   }
 
+  .controls .left,
+  .controls .right {
+    gap: 3px;
+  }
+
   .btn {
-    min-width: 38px;
+    height: 40px;
+    min-width: 40px;
+    padding: 0 8px;
+    font-size: 12px;
+  }
+  
+  .btn.primary {
     padding: 0 10px;
-    font-size: 13px;
   }
 
   .status {
-    font-size: 12px;
-    padding: 4px 8px;
+    font-size: 11px;
+    padding: 6px 6px;
   }
 }
 
