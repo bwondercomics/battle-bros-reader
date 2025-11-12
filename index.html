@@ -1370,10 +1370,11 @@ a:focus-visible,
   }
 
   .side-panel {
-    width: calc(50% - 6px);
-    max-width: none;
+    width: calc(50% - 6px) !important;
+    min-width: 0 !important;
+    max-width: none !important;
     min-height: auto;
-    flex: 0 0 auto;
+    flex: 0 0 calc(50% - 6px) !important;
   }
 
   .side-panel.left {
