@@ -368,6 +368,139 @@ select#chapter option {
   border-color: var(--accent);
 }
 
+/* ==================== EMAIL SIGNUP SECTION ==================== */
+.email-signup-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.email-signup-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+}
+
+.email-signup-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.email-input {
+  width: 100%;
+  max-width: 280px;
+  padding: 10px 12px;
+  background: rgba(26,26,46,0.8);
+  border: 3px solid var(--primary);
+  color: var(--text);
+  font-family: 'Righteous', sans-serif;
+  font-size: 14px;
+  text-align: center;
+  transition: all 0.2s;
+  box-shadow: 
+    0 0 10px rgba(0,217,255,0.3),
+    inset 0 2px 4px rgba(0,0,0,0.4);
+}
+
+.email-input::placeholder {
+  color: rgba(255,255,255,0.4);
+  font-size: 13px;
+}
+
+.email-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 
+    0 0 20px rgba(255,237,0,0.5),
+    inset 0 2px 4px rgba(0,0,0,0.4);
+  background: rgba(26,26,46,0.95);
+}
+
+.email-submit-btn {
+  padding: 10px 32px;
+  background: linear-gradient(135deg, var(--accent), var(--primary));
+  border: 3px solid var(--accent);
+  color: var(--bg-dark);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 
+    0 4px 0 rgba(0,0,0,0.5),
+    0 0 20px rgba(255,237,0,0.4);
+  position: relative;
+}
+
+.email-submit-btn:hover {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  transform: translateY(-2px);
+  box-shadow: 
+    0 6px 0 rgba(0,0,0,0.5),
+    0 0 30px rgba(255,237,0,0.7);
+}
+
+.email-submit-btn:active {
+  transform: translateY(0);
+  box-shadow: 
+    0 2px 0 rgba(0,0,0,0.5),
+    0 0 15px rgba(255,237,0,0.4);
+}
+
+.email-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.email-signup-cta {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-align: center;
+  text-shadow: 
+    2px 2px 0 rgba(0,0,0,0.5),
+    0 0 10px rgba(255,237,0,0.4);
+}
+
+.email-form-message {
+  font-family: 'Righteous', sans-serif;
+  font-size: 14px;
+  text-align: center;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-top: 8px;
+  max-width: 280px;
+}
+
+.email-form-message.success {
+  background: rgba(0,217,255,0.2);
+  border: 2px solid var(--primary);
+  color: var(--primary);
+}
+
+.email-form-message.error {
+  background: rgba(255,56,56,0.2);
+  border: 2px solid var(--danger);
+  color: var(--danger);
+}
+
 .side-panel.right {
   display: flex;
   flex-direction: column;
@@ -1248,6 +1381,30 @@ a:focus-visible,
     font-size: 11px;
   }
   
+  .email-signup-section {
+    gap: 8px;
+    margin-top: 4px;
+  }
+  
+  .email-signup-label {
+    font-size: 14px;
+  }
+  
+  .email-input {
+    max-width: 100%;
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+  
+  .email-submit-btn {
+    font-size: 16px;
+    padding: 8px 24px;
+  }
+  
+  .email-signup-cta {
+    font-size: 13px;
+  }
+  
   .side-panel.right {
     order: 3;
     flex-direction: row;
@@ -1302,6 +1459,28 @@ a:focus-visible,
 
   .side-panel.left .left-panel-text-bottom {
     font-size: 10px;
+  }
+
+  .email-signup-section {
+    gap: 6px;
+  }
+  
+  .email-signup-label {
+    font-size: 12px;
+  }
+  
+  .email-input {
+    font-size: 12px;
+    padding: 7px 8px;
+  }
+  
+  .email-submit-btn {
+    font-size: 14px;
+    padding: 7px 20px;
+  }
+  
+  .email-signup-cta {
+    font-size: 12px;
   }
 
   .side-panel.right {
@@ -1378,6 +1557,17 @@ a:focus-visible,
           </picture>
         </div>
         <div class="left-panel-text-bottom">WANT TO SUPPORT THE COMIC? Buy the physical book at the bwondercomics store!</div>
+        
+        <!-- Email Signup Form -->
+        <div class="email-signup-section">
+          <div class="email-signup-label">GET LOVE LETTERS FROM ME:</div>
+          <form id="emailSignupForm" action="https://formspree.io/f/your_form_id" method="POST" class="email-signup-form">
+            <input type="email" name="email" id="emailInput" placeholder="your.email@example.com" required class="email-input" aria-label="Email address">
+            <button type="submit" class="email-submit-btn">SUBMIT</button>
+          </form>
+          <div class="email-signup-cta">JOIN THE EMAIL LIST!</div>
+          <div id="emailFormMessage" class="email-form-message" style="display: none;"></div>
+        </div>
       </div>
     </aside>
 
@@ -2599,12 +2789,77 @@ a:focus-visible,
     hideEndOfChapter();
   }
 
+  // ==================== EMAIL SIGNUP FORM ====================
+  
+  function initEmailSignupForm() {
+    const form = document.getElementById('emailSignupForm');
+    const messageDiv = document.getElementById('emailFormMessage');
+    
+    if (!form) return;
+    
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const emailInput = document.getElementById('emailInput');
+      const submitBtn = form.querySelector('.email-submit-btn');
+      const email = emailInput.value.trim();
+      
+      if (!email) return;
+      
+      // Disable form during submission
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'SENDING...';
+      messageDiv.style.display = 'none';
+      
+      try {
+        // Submit to Formspree
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          // Success
+          messageDiv.textContent = 'Thanks for signing up! Check your inbox!';
+          messageDiv.className = 'email-form-message success';
+          messageDiv.style.display = 'block';
+          emailInput.value = '';
+          
+          // Hide success message after 5 seconds
+          setTimeout(() => {
+            messageDiv.style.display = 'none';
+          }, 5000);
+        } else {
+          throw new Error('Form submission failed');
+        }
+      } catch (error) {
+        // Error
+        messageDiv.textContent = 'Oops! Something went wrong. Try again?';
+        messageDiv.className = 'email-form-message error';
+        messageDiv.style.display = 'block';
+        
+        // Hide error message after 5 seconds
+        setTimeout(() => {
+          messageDiv.style.display = 'none';
+        }, 5000);
+      } finally {
+        // Re-enable form
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'SUBMIT';
+      }
+    });
+  }
+
   // ==================== INITIALIZATION ====================
   
   function init() {
     initElements();
     initChapterSelect();
     setInitialSubtitle();
+    initEmailSignupForm();
 
     const saved = loadProgress();
     if (saved && chapters[saved.chapter]) {
