@@ -1333,7 +1333,8 @@ a:focus-visible,
   }
 
   .viewerWrap {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     padding: 12px;
     gap: 12px;
   }
@@ -1342,6 +1343,7 @@ a:focus-visible,
   .viewer-content-wrapper {
     order: 1;
     width: 100%;
+    flex: 0 0 100%;
   }
 
   /* Viewport and controls use natural document flow within wrapper */
@@ -1368,7 +1370,7 @@ a:focus-visible,
   }
 
   .side-panel {
-    width: 100%;
+    width: calc(50% - 6px);
     max-width: none;
     min-height: auto;
     flex: 0 0 auto;
@@ -1376,7 +1378,8 @@ a:focus-visible,
 
   .side-panel.left {
     order: 2;
-    height: 220px;
+    height: auto;
+    min-height: 320px;
   }
 
   .side-panel.left .left-panel-content {
@@ -1421,20 +1424,20 @@ a:focus-visible,
     flex-direction: column;
     padding: 12px;
     height: auto;
-    min-height: auto;
+    min-height: 320px;
   }
   
   .side-panel.right .preview {
     width: 100%;
     max-height: none;
-    height: 200px;
+    height: 140px;
     margin-bottom: 12px;
   }
   
   .panel-buttons {
     flex-direction: column;
     padding: 0;
-    gap: 12px;
+    gap: 8px;
   }
   
   .panel-btn {
