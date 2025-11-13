@@ -71,7 +71,7 @@ Once tested on `feature/admin-panel` branch:
 const GITHUB_CONFIG = {
   owner: 'bwondercomics',
   repo: 'battle-bros-reader',
-  branch: 'main', // or 'feature/admin-panel' for testing
+  branch: 'feature/admin-panel' for testing
   dataFile: 'admin/data.json'
 };
 
