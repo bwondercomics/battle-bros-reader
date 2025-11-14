@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battle Bros: Cyber Chase | Retro Arcade Game</title>
+    <meta name="description" content="Chase the ultimate power-up in this retro cyberpunk arcade game! Dodge obstacles, collect boosts, and prove you're a true Battle Bro!">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Righteous&family=Orbitron:wght@400;700;900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(180deg, #0a0a12 0%, #1a1a2e 100%);
+            color: #00d9ff;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 800px;
+            height: 100vh;
+            max-height: 600px;
+            position: relative;
+            border: 4px solid #00d9ff;
+            box-shadow: 
+                0 0 20px rgba(0, 217, 255, 0.5),
+                inset 0 0 20px rgba(0, 217, 255, 0.1);
+            background: #0a0a12;
+            overflow: hidden;
+        }
+
+        /* Scanline effect */
+        .game-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 217, 255, 0.03) 2px,
+                rgba(0, 217, 255, 0.03) 4px
+            );
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        #gameCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #0a0a12 0%, #1a1a2e 50%, #0a0a12 100%);
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 18, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .overlay.hidden {
+            display: none;
+        }
+
+        h1 {
+            font-family: 'Righteous', sans-serif;
+            font-size: 3em;
+            color: #00d9ff;
+            text-transform: uppercase;
+            text-shadow: 
+                0 0 10px rgba(0, 217, 255, 0.8),
+                0 0 20px rgba(0, 217, 255, 0.5),
+                0 0 30px rgba(0, 217, 255, 0.3);
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #ff00ea;
+            text-shadow: 0 0 10px rgba(255, 0, 234, 0.6);
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .instructions {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, rgba(255, 0, 234, 0.1) 100%);
+            border: 2px solid #00d9ff;
+            padding: 20px 30px;
+            margin: 20px 0;
+            border-radius: 10px;
+            max-width: 500px;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .instructions h2 {
+            color: #ffed00;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(255, 237, 0, 0.6);
+        }
+
+        .instructions p {
+            color: #ffffff;
+            margin: 10px 0;
+            line-height: 1.6;
+            font-size: 0.9em;
+        }
+
+        .instructions .key {
+            display: inline-block;
+            padding: 3px 8px;
+            background: rgba(0, 217, 255, 0.2);
+            border: 1px solid #00d9ff;
+            border-radius: 3px;
+            color: #00d9ff;
+            font-weight: bold;
+            margin: 0 3px;
+        }
+
+        button {
+            font-family: 'Righteous', sans-serif;
+            font-size: 1.5em;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #00d9ff 0%, #ff00ea 100%);
+            border: none;
+            border-radius: 50px;
+            color: #0a0a12;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+            margin-top: 20px;
+            letter-spacing: 2px;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+            box-shadow: 
+                0 0 30px rgba(0, 217, 255, 0.8),
+                0 0 40px rgba(255, 0, 234, 0.6);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .hud {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 50;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .hud-item {
+            background: rgba(10, 10, 18, 0.8);
+            padding: 10px 20px;
+            border: 2px solid #00d9ff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        .hud-label {
+            font-size: 0.8em;
+            color: #ffed00;
+            margin-bottom: 5px;
+        }
+
+        .hud-value {
+            font-size: 1.5em;
+            color: #00d9ff;
+            text-shadow: 0 0 10px rgba(0, 217, 255, 0.6);
+        }
+
+        .win-screen {
+            animation: victoryPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes victoryPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .win-screen h1 {
+            color: #ffed00;
+            font-size: 4em;
+            text-shadow: 
+                0 0 20px rgba(255, 237, 0, 1),
+                0 0 40px rgba(255, 0, 234, 0.8),
+                0 0 60px rgba(0, 217, 255, 0.6);
+        }
+
+        .final-score {
+            font-size: 2em;
+            color: #00d9ff;
+            margin: 20px 0;
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.8);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .subtitle {
+                font-size: 1em;
+            }
+
+            .instructions {
+                padding: 15px 20px;
+                margin: 15px;
+            }
+
+            .instructions h2 {
+                font-size: 1.2em;
+            }
+
+            .instructions p {
+                font-size: 0.85em;
+            }
+
+            button {
+                font-size: 1.2em;
+                padding: 12px 30px;
+            }
+
+            .hud {
+                top: 10px;
+                left: 10px;
+                right: 10px;
+            }
+
+            .hud-item {
+                padding: 8px 12px;
+            }
+
+            .hud-value {
+                font-size: 1.2em;
+            }
+        }
+
+        .pixel-corners {
+            position: relative;
+        }
+
+        .pixel-corners::before,
+        .pixel-corners::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+        }
+
+        .pixel-corners::before {
+            top: -2px;
+            left: -2px;
+            border-top: 4px solid #ffed00;
+            border-left: 4px solid #ffed00;
+        }
+
+        .pixel-corners::after {
+            bottom: -2px;
+            right: -2px;
+            border-bottom: 4px solid #ffed00;
+            border-right: 4px solid #ffed00;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- HUD -->
+        <div class="hud">
+            <div class="hud-item">
+                <div class="hud-label">Distance</div>
+                <div class="hud-value" id="distance">0m</div>
+            </div>
+            <div class="hud-item">
+                <div class="hud-label">Speed</div>
+                <div class="hud-value" id="speed">100%</div>
+            </div>
+            <div class="hud-item">
+                <div class="hud-label">Score</div>
+                <div class="hud-value" id="score">0</div>
+            </div>
+        </div>
+
+        <!-- Game Canvas -->
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- Start Screen -->
+        <div class="overlay" id="startScreen">
+            <h1>CYBER CHASE</h1>
+            <div class="subtitle">Battle Bros Arcade</div>
+            <div class="instructions pixel-corners">
+                <h2>MISSION BRIEFING</h2>
+                <p>Chase the ultimate power-up through cyberspace!</p>
+                <p>Use <span class="key">←</span> <span class="key">→</span> arrow keys to dodge obstacles</p>
+                <p>🔷 <strong>Blue Boosts</strong> increase your speed</p>
+                <p>⚠️ <strong>Red Obstacles</strong> slow you down</p>
+                <p>Reach 1000m to claim victory!</p>
+            </div>
+            <button id="startBtn">START GAME</button>
+        </div>
+
+        <!-- Win Screen -->
+        <div class="overlay hidden" id="winScreen">
+            <div class="win-screen">
+                <h1>VICTORY!</h1>
+                <div class="subtitle">You're a True Battle Bro!</div>
+                <div class="final-score">Final Score: <span id="finalScore">0</span></div>
+                <div class="instructions pixel-corners">
+                    <h2>MISSION COMPLETE</h2>
+                    <p>You've mastered the cyber chase!</p>
+                    <p>Distance: <span id="finalDistance">0</span>m</p>
+                    <p>Boosts Collected: <span id="finalBoosts">0</span></p>
+                    <p>Obstacles Dodged: <span id="finalDodges">0</span></p>
+                </div>
+                <button id="playAgainBtn">PLAY AGAIN</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game configuration
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas size
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Game state
+        const game = {
+            running: false,
+            distance: 0,
+            speed: 5,
+            baseSpeed: 5,
+            speedMultiplier: 1,
+            score: 0,
+            boostsCollected: 0,
+            obstaclesHit: 0,
+            totalObstacles: 0,
+            targetDistance: 1000,
+            lastObstacleSpawn: 0,
+            lastBoostSpawn: 0,
+            slowdownTimer: 0
+        };
+
+        // Player
+        const player = {
+            x: 0,
+            y: 0,
+            width: 40,
+            height: 60,
+            lane: 1, // 0 = left, 1 = center, 2 = right
+            targetLane: 1,
+            moving: false,
+            hit: false,
+            hitTimer: 0
+        };
+
+        // Game objects
+        const obstacles = [];
+        const boosts = [];
+        const particles = [];
+
+        // Controls
+        const keys = {};
+        window.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            
+            if (game.running) {
+                if (e.key === 'ArrowLeft' && player.lane > 0) {
+                    player.targetLane = player.lane - 1;
+                    player.moving = true;
+                } else if (e.key === 'ArrowRight' && player.lane < 2) {
+                    player.targetLane = player.lane + 1;
+                    player.moving = true;
+                }
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        // Start game
+        document.getElementById('startBtn').addEventListener('click', startGame);
+        document.getElementById('playAgainBtn').addEventListener('click', () => {
+            document.getElementById('winScreen').classList.add('hidden');
+            resetGame();
+            startGame();
+        });
+
+        function startGame() {
+            document.getElementById('startScreen').classList.add('hidden');
+            game.running = true;
+            gameLoop();
+        }
+
+        function resetGame() {
+            game.distance = 0;
+            game.speed = game.baseSpeed;
+            game.speedMultiplier = 1;
+            game.score = 0;
+            game.boostsCollected = 0;
+            game.obstaclesHit = 0;
+            game.totalObstacles = 0;
+            game.lastObstacleSpawn = 0;
+            game.lastBoostSpawn = 0;
+            game.slowdownTimer = 0;
+            player.lane = 1;
+            player.targetLane = 1;
+            player.hit = false;
+            player.hitTimer = 0;
+            obstacles.length = 0;
+            boosts.length = 0;
+            particles.length = 0;
+        }
+
+        // Particle system
+        function createParticles(x, y, color, count = 10) {
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 8,
+                    vy: (Math.random() - 0.5) * 8,
+                    life: 1,
+                    color: color,
+                    size: Math.random() * 4 + 2
+                });
+            }
+        }
+
+        // Spawn obstacles
+        function spawnObstacle() {
+            const lane = Math.floor(Math.random() * 3);
+            obstacles.push({
+                lane: lane,
+                y: -50,
+                width: 50,
+                height: 50,
+                passed: false
+            });
+            game.totalObstacles++;
+        }
+
+        // Spawn boosts
+        function spawnBoost() {
+            const lane = Math.floor(Math.random() * 3);
+            boosts.push({
+                lane: lane,
+                y: -50,
+                width: 40,
+                height: 40,
+                collected: false,
+                pulse: 0
+            });
+        }
+
+        // Get lane X position
+        function getLaneX(lane) {
+            const laneWidth = canvas.width / 3;
+            return lane * laneWidth + laneWidth / 2;
+        }
+
+        // Update game state
+        function update(deltaTime) {
+            if (!game.running) return;
+
+            // Update distance
+            game.distance += game.speed * game.speedMultiplier * deltaTime / 16;
+
+            // Check win condition
+            if (game.distance >= game.targetDistance) {
+                winGame();
+                return;
+            }
+
+            // Update slowdown timer
+            if (game.slowdownTimer > 0) {
+                game.slowdownTimer -= deltaTime;
+                game.speedMultiplier = 0.5;
+                if (game.slowdownTimer <= 0) {
+                    game.speedMultiplier = 1;
+                }
+            }
+
+            // Update player hit timer
+            if (player.hitTimer > 0) {
+                player.hitTimer -= deltaTime;
+                if (player.hitTimer <= 0) {
+                    player.hit = false;
+                }
+            }
+
+            // Move player to target lane
+            const targetX = getLaneX(player.targetLane);
+            player.x += (targetX - player.x) * 0.2;
+            if (Math.abs(targetX - player.x) < 1) {
+                player.x = targetX;
+                player.lane = player.targetLane;
+                player.moving = false;
+            }
+
+            // Spawn obstacles
+            if (Date.now() - game.lastObstacleSpawn > 1000) {
+                spawnObstacle();
+                game.lastObstacleSpawn = Date.now();
+            }
+
+            // Spawn boosts
+            if (Date.now() - game.lastBoostSpawn > 2000) {
+                spawnBoost();
+                game.lastBoostSpawn = Date.now();
+            }
+
+            // Update obstacles
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                const obstacle = obstacles[i];
+                obstacle.y += (game.speed * game.speedMultiplier + 2);
+
+                // Check collision
+                const obstacleX = getLaneX(obstacle.lane);
+                if (!obstacle.passed && 
+                    Math.abs(player.x - obstacleX) < 30 &&
+                    Math.abs(player.y - obstacle.y) < 40) {
+                    // Hit!
+                    game.slowdownTimer = 1000;
+                    game.obstaclesHit++;
+                    player.hit = true;
+                    player.hitTimer = 500;
+                    createParticles(obstacleX, obstacle.y, '#ff00ea', 15);
+                    obstacle.passed = true;
+                }
+
+                // Mark as passed
+                if (obstacle.y > player.y && !obstacle.passed) {
+                    obstacle.passed = true;
+                    game.score += 10;
+                }
+
+                // Remove off-screen obstacles
+                if (obstacle.y > canvas.height + 50) {
+                    obstacles.splice(i, 1);
+                }
+            }
+
+            // Update boosts
+            for (let i = boosts.length - 1; i >= 0; i--) {
+                const boost = boosts[i];
+                boost.y += (game.speed * game.speedMultiplier + 2);
+                boost.pulse += 0.1;
+
+                // Check collection
+                const boostX = getLaneX(boost.lane);
+                if (!boost.collected && 
+                    Math.abs(player.x - boostX) < 30 &&
+                    Math.abs(player.y - boost.y) < 40) {
+                    // Collected!
+                    boost.collected = true;
+                    game.boostsCollected++;
+                    game.distance += 50; // Big distance boost
+                    game.score += 50;
+                    createParticles(boostX, boost.y, '#00d9ff', 20);
+                    boosts.splice(i, 1);
+                    continue;
+                }
+
+                // Remove off-screen boosts
+                if (boost.y > canvas.height + 50) {
+                    boosts.splice(i, 1);
+                }
+            }
+
+            // Update particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life -= 0.02;
+                if (p.life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+
+            // Update player position
+            player.y = canvas.height * 0.7;
+        }
+
+        // Draw game
+        function draw() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw road lanes
+            const laneWidth = canvas.width / 3;
+            ctx.strokeStyle = 'rgba(0, 217, 255, 0.2)';
+            ctx.lineWidth = 2;
+            for (let i = 1; i < 3; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * laneWidth, 0);
+                ctx.lineTo(i * laneWidth, canvas.height);
+                ctx.stroke();
+            }
+
+            // Draw road lines (moving)
+            ctx.strokeStyle = 'rgba(0, 217, 255, 0.3)';
+            ctx.setLineDash([20, 20]);
+            ctx.lineDashOffset = -(game.distance * 2) % 40;
+            for (let i = 1; i < 3; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * laneWidth, 0);
+                ctx.lineTo(i * laneWidth, canvas.height);
+                ctx.stroke();
+            }
+            ctx.setLineDash([]);
+
+            // Draw target indicator at top
+            const progress = game.distance / game.targetDistance;
+            ctx.fillStyle = '#ffed00';
+            ctx.font = 'bold 16px Orbitron';
+            ctx.textAlign = 'center';
+            ctx.fillText('TARGET', canvas.width / 2, 30);
+            
+            // Progress bar
+            const barWidth = canvas.width * 0.6;
+            const barX = (canvas.width - barWidth) / 2;
+            ctx.strokeStyle = '#ffed00';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(barX, 40, barWidth, 10);
+            ctx.fillStyle = '#ffed00';
+            ctx.fillRect(barX, 40, barWidth * Math.min(progress, 1), 10);
+
+            // Draw obstacles
+            obstacles.forEach(obstacle => {
+                const x = getLaneX(obstacle.lane);
+                
+                // Shadow
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                ctx.fillRect(x - obstacle.width / 2 + 5, obstacle.y + 5, obstacle.width, obstacle.height);
+                
+                // Obstacle body
+                ctx.fillStyle = '#ff00ea';
+                ctx.fillRect(x - obstacle.width / 2, obstacle.y, obstacle.width, obstacle.height);
+                
+                // Glow effect
+                ctx.strokeStyle = '#ff00ea';
+                ctx.lineWidth = 3;
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = '#ff00ea';
+                ctx.strokeRect(x - obstacle.width / 2, obstacle.y, obstacle.width, obstacle.height);
+                ctx.shadowBlur = 0;
+                
+                // Warning symbol
+                ctx.fillStyle = '#0a0a12';
+                ctx.font = 'bold 30px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('!', x, obstacle.y + 35);
+            });
+
+            // Draw boosts
+            boosts.forEach(boost => {
+                const x = getLaneX(boost.lane);
+                const pulseSize = Math.sin(boost.pulse) * 5;
+                
+                // Glow
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = '#00d9ff';
+                
+                // Boost shape (diamond)
+                ctx.fillStyle = '#00d9ff';
+                ctx.beginPath();
+                ctx.moveTo(x, boost.y - 20 - pulseSize);
+                ctx.lineTo(x + 20 + pulseSize, boost.y);
+                ctx.lineTo(x, boost.y + 20 + pulseSize);
+                ctx.lineTo(x - 20 - pulseSize, boost.y);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Inner highlight
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                ctx.beginPath();
+                ctx.moveTo(x, boost.y - 10);
+                ctx.lineTo(x + 10, boost.y);
+                ctx.lineTo(x, boost.y + 10);
+                ctx.lineTo(x - 10, boost.y);
+                ctx.closePath();
+                ctx.fill();
+                
+                ctx.shadowBlur = 0;
+            });
+
+            // Draw particles
+            particles.forEach(p => {
+                ctx.fillStyle = p.color + Math.floor(p.life * 255).toString(16).padStart(2, '0');
+                ctx.fillRect(p.x, p.y, p.size, p.size);
+            });
+
+            // Draw player
+            const px = player.x;
+            const py = player.y;
+
+            // Hit effect
+            if (player.hit) {
+                ctx.fillStyle = 'rgba(255, 0, 234, 0.3)';
+                ctx.fillRect(px - 30, py - 40, 60, 80);
+            }
+
+            // Shadow
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.fillRect(px - player.width / 2 + 5, py - player.height / 2 + 5, player.width, player.height);
+
+            // Player body (cyber warrior)
+            ctx.fillStyle = '#00d9ff';
+            ctx.fillRect(px - player.width / 2, py - player.height / 2, player.width, player.height);
+            
+            // Glow effect
+            ctx.strokeStyle = '#00d9ff';
+            ctx.lineWidth = 3;
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = '#00d9ff';
+            ctx.strokeRect(px - player.width / 2, py - player.height / 2, player.width, player.height);
+            ctx.shadowBlur = 0;
+
+            // Player details
+            ctx.fillStyle = '#0a0a12';
+            ctx.fillRect(px - 12, py - 15, 24, 8); // Visor
+            ctx.fillStyle = '#ffed00';
+            ctx.fillRect(px - 5, py, 10, 15); // Core
+
+            // Speed trail
+            if (game.speedMultiplier > 0.8) {
+                for (let i = 0; i < 3; i++) {
+                    ctx.fillStyle = `rgba(0, 217, 255, ${0.1 * (3 - i)})`;
+                    ctx.fillRect(px - 15, py + 20 + i * 10, 30, 5);
+                }
+            }
+
+            // Update HUD
+            document.getElementById('distance').textContent = Math.floor(game.distance) + 'm';
+            document.getElementById('speed').textContent = Math.floor(game.speedMultiplier * 100) + '%';
+            document.getElementById('score').textContent = game.score;
+        }
+
+        // Win game
+        function winGame() {
+            game.running = false;
+            
+            // Calculate final stats
+            const dodgedObstacles = game.totalObstacles - game.obstaclesHit;
+            
+            // Update win screen
+            document.getElementById('finalScore').textContent = game.score;
+            document.getElementById('finalDistance').textContent = Math.floor(game.distance);
+            document.getElementById('finalBoosts').textContent = game.boostsCollected;
+            document.getElementById('finalDodges').textContent = dodgedObstacles;
+            
+            // Show win screen
+            document.getElementById('winScreen').classList.remove('hidden');
+        }
+
+        // Game loop
+        let lastTime = 0;
+        function gameLoop(timestamp = 0) {
+            const deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
+
+            update(deltaTime);
+            draw();
+
+            if (game.running) {
+                requestAnimationFrame(gameLoop);
+            }
+        }
+
+        // Initialize player position
+        player.x = getLaneX(1);
+        player.y = canvas.height * 0.7;
+    </script>
+</body>
+</html>
