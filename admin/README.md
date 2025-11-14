@@ -8,6 +8,7 @@ A web-based admin interface for managing the Battle Bros comic reader website wi
 - ✅ **Simple Authentication** - Password-protected access to admin panel
 - ✅ **Chapter Management** - Add, edit, delete, and reorder chapters
 - ✅ **Visual Editor** - Edit chapter names and page lists with intuitive UI
+- ✅ **GitHub Auto-Publish** - One-click publishing directly to GitHub
 - ✅ **Preview & Export** - Preview changes and export JSON data
 - ✅ **Draft Auto-Save** - Changes saved to localStorage automatically
 - ✅ **Mobile Responsive** - Works on desktop, tablet, and mobile devices
@@ -80,7 +81,48 @@ When editing a chapter:
 
 ### Publishing Changes
 
-After editing:
+#### Automatic GitHub Publishing (Recommended)
+
+The admin panel now supports **automatic publishing** directly to GitHub! 🚀
+
+**First Time Setup:**
+1. Click the **⚙️ SETTINGS** button in the admin header
+2. Create a GitHub Personal Access Token:
+   - Go to https://github.com/settings/tokens
+   - Click "Generate new token (classic)"
+   - Give it a name like "Battle Bros Admin"
+   - Select scope: **repo** (full control of private repositories)
+   - Set expiration (90 days recommended)
+   - Click "Generate token"
+3. Copy the token (starts with `ghp_`)
+4. Paste it into the Settings modal
+5. Click **SAVE TOKEN**
+6. Your token is now saved securely in your browser
+
+**Publishing Updates:**
+1. Make your chapter edits in the admin panel
+2. Click **🚀 PUBLISH TO GITHUB** button
+3. Confirm the publish action
+4. Wait ~1-2 minutes for the changes to go live
+5. Check the workflow status at: https://github.com/bwondercomics/battle-bros-reader/actions
+
+**What Happens Behind the Scenes:**
+- Your changes are committed to `admin/data.json`
+- GitHub Actions workflow automatically triggers
+- The workflow updates `index.html` with new chapter data
+- GitHub Pages rebuilds and deploys your site
+- Changes are live in 1-2 minutes!
+
+**Token Security:**
+- ✅ Token is stored in your browser's localStorage only
+- ✅ Token is never sent to any server except GitHub API
+- ✅ You can revoke it anytime at github.com/settings/tokens
+- ⚠️ Use the minimum required scope (**repo**)
+- ⚠️ Set token expiration for added security
+
+#### Manual Publishing (Legacy Method)
+
+If you prefer to publish manually:
 1. Click **PREVIEW CHANGES**
 2. Copy the JSON data
 3. Open `index.html` in your code editor
@@ -131,6 +173,7 @@ The admin interface uses **localStorage** for draft storage:
 ### Storage Keys
 - `battlebros_admin_data` - Chapter data (JSON)
 - `battlebros_admin_session` - Authentication session
+- `battlebros_github_user_token` - GitHub Personal Access Token (for auto-publish)
 
 ### Clearing Data
 To reset to defaults, open browser console and run:
