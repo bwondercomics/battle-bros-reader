@@ -1227,14 +1227,14 @@ body::before {
       item.className = 'page-item';
       item.innerHTML = `
         <span class="page-path">${escapeHtml(path)}</span>
-        <button class="btn-remove" data-index="${index}">Remove</button>
+        <button class="btn-remove" data-index="${index}" data-path="${escapeHtml(path)}">Remove</button>
       `;
       el.pageList.appendChild(item);
     });
     
     // Attach event listeners
     document.querySelectorAll('.btn-remove').forEach(btn => {
-      btn.addEventListener('click', () => removePage(parseInt(btn.dataset.index)));
+      btn.addEventListener('click', () => removePage(parseInt(btn.dataset.index), btn.dataset.path));
     });
   }
 
@@ -1302,11 +1302,43 @@ body::before {
     }
   }
 
-  function removePage(index) {
+  async function removePage(index, imagePath) {
     const currentPages = [];
     el.pageList.querySelectorAll('.page-path').forEach(span => {
       currentPages.push(span.textContent.trim());
     });
+    
+    // Check if user has GitHub token configured
+    const token = localStorage.getItem(GITHUB_TOKEN_KEY);
+    
+    if (token) {
+      // Show confirmation dialog with option to permanently delete
+      const message = `What would you like to do with "${imagePath}"?\n\n` +
+        `⚠️ WARNING: Permanent deletion cannot be undone!\n\n` +
+        `Click OK to PERMANENTLY DELETE from GitHub\n` +
+        `Click Cancel to just remove from chapter list`;
+      
+      const deleteFromGitHub = confirm(message);
+      
+      if (deleteFromGitHub) {
+        // User wants to permanently delete from GitHub
+        const deleteBtn = document.querySelector(`[data-index="${index}"]`);
+        if (deleteBtn) {
+          deleteBtn.disabled = true;
+          deleteBtn.textContent = 'Deleting...';
+        }
+        
+        try {
+          await deleteImageFromGitHub(imagePath, token);
+          alert(`✓ Image "${imagePath}" has been permanently deleted from GitHub!`);
+        } catch (error) {
+          console.error('Delete error:', error);
+          alert(`Failed to delete image from GitHub:\n\n${error.message}\n\nThe image will still be removed from the chapter list.`);
+        }
+      }
+    }
+    
+    // Remove from chapter list (regardless of GitHub deletion result)
     currentPages.splice(index, 1);
     renderPageList(currentPages);
   }
@@ -1595,6 +1627,66 @@ body::before {
       progressStatus.textContent = `✗ ${error.message}`;
       progressStatus.classList.add('error');
       return { success: false, error: error.message, file: file.name };
+    }
+  }
+
+  // ==================== GITHUB API - FILE DELETION ====================
+
+  async function getFileSha(filePath, token) {
+    const response = await fetch(
+      `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${filePath}?ref=${GITHUB_CONFIG.branch}`,
+      {
+        headers: { 
+          'Authorization': `token ${token}`,
+          'Accept': 'application/vnd.github.v3+json'
+        }
+      }
+    );
+    
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('File not found in repository');
+      }
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to fetch file information');
+    }
+    
+    const data = await response.json();
+    return data.sha;
+  }
+
+  async function deleteImageFromGitHub(filePath, token) {
+    try {
+      // Step 1: Get file SHA (required for deletion)
+      const sha = await getFileSha(filePath, token);
+      
+      // Step 2: Delete the file
+      const response = await fetch(
+        `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${filePath}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `token ${token}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/vnd.github.v3+json'
+          },
+          body: JSON.stringify({
+            message: `Delete ${filePath} via admin panel`,
+            sha: sha,
+            branch: GITHUB_CONFIG.branch
+          })
+        }
+      );
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Delete operation failed');
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('GitHub delete error:', error);
+      throw error;
     }
   }
 
