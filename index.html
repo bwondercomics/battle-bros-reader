@@ -1844,28 +1844,6 @@ a:focus-visible,
     ]
 };
 
-  // ==================== STATE ====================
-  const state = {
-    currentChapter: '',
-    pages: [],
-    pageIndex: 0,
-    scale: 1,
-    pan: { x: 0, y: 0 },
-    panStart: { x: 0, y: 0 },
-    dragStart: { x: 0, y: 0 },
-    isDragging: false,
-    isTransitioning: false,
-    pointers: new Map(),
-    pinchDistance: null,
-    pinchCenter: null,
-    pinchScale: null,
-    touchStart: null,
-    lastTap: 0,
-    rafId: null,
-    prevTransformOrigin: null,
-    imageCache: new Map()
-  };
-
   // ==================== DOM ELEMENTS ====================
   const el = {};
 
