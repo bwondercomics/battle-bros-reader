@@ -301,16 +301,20 @@
         <!-- HUD -->
         <div class="hud">
             <div class="hud-item">
-                <div class="hud-label">Distance</div>
-                <div class="hud-value" id="distance">0m</div>
+                <div class="hud-label">❤️ Lives</div>
+                <div class="hud-value" id="lives">3</div>
             </div>
             <div class="hud-item">
-                <div class="hud-label">Speed</div>
-                <div class="hud-value" id="speed">100%</div>
+                <div class="hud-label">🪙 Coins</div>
+                <div class="hud-value" id="coins">0</div>
             </div>
             <div class="hud-item">
                 <div class="hud-label">Score</div>
                 <div class="hud-value" id="score">0</div>
+            </div>
+            <div class="hud-item">
+                <div class="hud-label">🔥 Combo</div>
+                <div class="hud-value" id="combo">0x</div>
             </div>
         </div>
 
@@ -320,20 +324,41 @@
         <!-- Start Screen -->
         <div class="overlay" id="startScreen">
             <h1>CYBER CHASE</h1>
-            <div class="subtitle">Battle Bros Arcade</div>
+            <div class="subtitle">Endless Runner • Battle Bros Arcade</div>
             <div class="instructions pixel-corners">
-                <h2>MISSION BRIEFING</h2>
-                <p>Chase the ultimate power-up through cyberspace!</p>
-                <p>Use <span class="key">←</span> <span class="key">→</span> arrow keys to dodge obstacles</p>
-                <p>🔷 <strong>Blue Boosts</strong> give +100m progress</p>
-                <p>⚠️ <strong>Red Obstacles</strong> slow you down</p>
-                <p>Reach <strong>5000m</strong> to claim victory!</p>
-                <p style="font-size: 0.85em; color: #ffed00; margin-top: 10px;">⚡ Speed increases as you get closer!</p>
+                <h2>HOW TO PLAY</h2>
+                <p>🎯 Survive as long as you can in endless cyberspace!</p>
+                <p>Use <span class="key">←</span> <span class="key">→</span> arrow keys to switch lanes</p>
+                <p>🪙 <strong>Collect Coins</strong> for points & combos</p>
+                <p>💎 <strong>Power-Ups:</strong> Shield, Magnet, 2x Score</p>
+                <p>⚠️ <strong>Avoid Obstacles</strong> or lose a life!</p>
+                <p>❤️ You have <strong>3 lives</strong> - don't lose them all!</p>
+                <p style="font-size: 0.85em; color: #ffed00; margin-top: 10px;">⚡ Speed increases over time!</p>
+                <p style="font-size: 0.9em; color: #00d9ff; margin-top: 8px;">🏆 High Score: <span id="displayHighScore">0</span></p>
             </div>
             <button id="startBtn">START GAME</button>
         </div>
 
-        <!-- Win Screen -->
+        <!-- Game Over Screen -->
+        <div class="overlay hidden" id="gameOverScreen">
+            <div class="win-screen">
+                <h1 style="color: #ff00ea;">💔 GAME OVER 💔</h1>
+                <div class="subtitle">You ran out of lives!</div>
+                <div class="final-score">Final Score: <span id="gameOverScore">0</span></div>
+                <div class="instructions pixel-corners">
+                    <h2>📊 RUN STATISTICS 📊</h2>
+                    <p>🏃 <strong>Distance:</strong> <span id="gameOverDistance">0</span>m</p>
+                    <p>🪙 <strong>Coins Collected:</strong> <span id="gameOverCoins">0</span></p>
+                    <p>✅ <strong>Obstacles Dodged:</strong> <span id="gameOverDodges">0</span></p>
+                    <p>🔥 <strong>Best Combo:</strong> <span id="gameOverCombo">0</span>x</p>
+                    <p>⏱️ <strong>Time Survived:</strong> <span id="gameOverTime">0</span>s</p>
+                    <p style="font-size: 1.1em; color: #ffed00; margin-top: 12px;" id="gameOverNewRecord"></p>
+                </div>
+                <button id="gameOverRetryBtn">TRY AGAIN</button>
+            </div>
+        </div>
+
+        <!-- Win Screen (kept for milestone achievements) -->
         <div class="overlay hidden" id="winScreen">
             <div class="win-screen">
                 <h1>🏆 VICTORY! 🏆</h1>
@@ -373,19 +398,31 @@
         const game = {
             running: false,
             distance: 0,
-            speed: 0.8,
-            baseSpeed: 0.8,
+            speed: 1.2,
+            baseSpeed: 1.2,
             speedMultiplier: 1,
             score: 0,
+            coins: 0,
+            lives: 3,
+            maxLives: 3,
+            combo: 0,
+            bestCombo: 0,
             boostsCollected: 0,
             obstaclesHit: 0,
             totalObstacles: 0,
-            targetDistance: 5000,
             lastObstacleSpawn: 0,
-            lastBoostSpawn: 0,
+            lastCoinSpawn: 0,
+            lastPowerUpSpawn: 0,
             slowdownTimer: 0,
             startTime: 0,
-            gameTime: 0
+            gameTime: 0,
+            highScore: localStorage.getItem('cyberChaseHighScore') || 0,
+            magnetActive: false,
+            magnetTimer: 0,
+            shieldActive: false,
+            shieldTimer: 0,
+            doubleScoreActive: false,
+            doubleScoreTimer: 0
         };
 
         // Player
@@ -403,7 +440,8 @@
 
         // Game objects
         const obstacles = [];
-        const boosts = [];
+        const coins = [];
+        const powerUps = [];
         const particles = [];
 
         // Controls
@@ -433,9 +471,18 @@
             resetGame();
             startGame();
         });
+        document.getElementById('gameOverRetryBtn').addEventListener('click', () => {
+            document.getElementById('gameOverScreen').classList.add('hidden');
+            resetGame();
+            startGame();
+        });
 
         function startGame() {
             document.getElementById('startScreen').classList.add('hidden');
+            
+            // Display high score on start screen
+            document.getElementById('displayHighScore').textContent = game.highScore;
+            
             game.running = true;
             game.startTime = Date.now();
             lastTime = 0; // Reset lastTime for proper deltaTime calculation
@@ -447,20 +494,32 @@
             game.speed = game.baseSpeed;
             game.speedMultiplier = 1;
             game.score = 0;
+            game.coins = 0;
+            game.lives = game.maxLives;
+            game.combo = 0;
+            game.bestCombo = 0;
             game.boostsCollected = 0;
             game.obstaclesHit = 0;
             game.totalObstacles = 0;
             game.lastObstacleSpawn = 0;
-            game.lastBoostSpawn = 0;
+            game.lastCoinSpawn = 0;
+            game.lastPowerUpSpawn = 0;
             game.slowdownTimer = 0;
             game.startTime = 0;
             game.gameTime = 0;
+            game.magnetActive = false;
+            game.magnetTimer = 0;
+            game.shieldActive = false;
+            game.shieldTimer = 0;
+            game.doubleScoreActive = false;
+            game.doubleScoreTimer = 0;
             player.lane = 1;
             player.targetLane = 1;
             player.hit = false;
             player.hitTimer = 0;
             obstacles.length = 0;
-            boosts.length = 0;
+            coins.length = 0;
+            powerUps.length = 0;
             particles.length = 0;
         }
 
@@ -492,17 +551,82 @@
             game.totalObstacles++;
         }
 
-        // Spawn boosts
-        function spawnBoost() {
+        // Spawn coins in patterns
+        function spawnCoins() {
+            const pattern = Math.random();
+            if (pattern < 0.5) {
+                // Single lane of coins
+                const lane = Math.floor(Math.random() * 3);
+                for (let i = 0; i < 3; i++) {
+                    coins.push({
+                        lane: lane,
+                        x: 0,
+                        y: -50 - i * 60,
+                        width: 25,
+                        height: 25,
+                        collected: false,
+                        spin: 0
+                    });
+                }
+            } else {
+                // Spread across lanes
+                for (let lane = 0; lane < 3; lane++) {
+                    coins.push({
+                        lane: lane,
+                        x: 0,
+                        y: -50,
+                        width: 25,
+                        height: 25,
+                        collected: false,
+                        spin: 0
+                    });
+                }
+            }
+        }
+
+        // Spawn power-ups
+        function spawnPowerUp() {
             const lane = Math.floor(Math.random() * 3);
-            boosts.push({
+            const types = ['magnet', 'shield', 'doublescore'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            
+            powerUps.push({
                 lane: lane,
                 y: -50,
                 width: 40,
                 height: 40,
                 collected: false,
-                pulse: 0
+                pulse: 0,
+                type: type
             });
+        }
+
+        // Activate power-up
+        function activatePowerUp(type) {
+            const duration = 5000; // 5 seconds
+            
+            switch(type) {
+                case 'magnet':
+                    game.magnetActive = true;
+                    game.magnetTimer = duration;
+                    break;
+                case 'shield':
+                    game.shieldActive = true;
+                    game.shieldTimer = duration;
+                    break;
+                case 'doublescore':
+                    game.doubleScoreActive = true;
+                    game.doubleScoreTimer = duration;
+                    break;
+            }
+        }
+
+        // Update HUD
+        function updateHUD() {
+            document.getElementById('lives').textContent = game.lives;
+            document.getElementById('coins').textContent = game.coins;
+            document.getElementById('score').textContent = game.score;
+            document.getElementById('combo').textContent = game.combo + 'x';
         }
 
         // Get lane X position
@@ -515,17 +639,31 @@
         function update(deltaTime) {
             if (!game.running) return;
 
-            // Progressive difficulty - speed increases as you get closer to target
-            const progressPercent = game.distance / game.targetDistance;
-            game.speed = game.baseSpeed * (1 + progressPercent * 1.5); // Speed increases up to 2.5x
+            // Endless runner - gradual speed increase based on distance
+            const speedIncrease = Math.floor(game.distance / 1000) * 0.15;
+            game.speed = game.baseSpeed + speedIncrease;
 
             // Update distance
             game.distance += game.speed * game.speedMultiplier * deltaTime / 16;
 
-            // Check win condition
-            if (game.distance >= game.targetDistance) {
-                winGame();
-                return;
+            // Update power-up timers
+            if (game.magnetTimer > 0) {
+                game.magnetTimer -= deltaTime;
+                if (game.magnetTimer <= 0) {
+                    game.magnetActive = false;
+                }
+            }
+            if (game.shieldTimer > 0) {
+                game.shieldTimer -= deltaTime;
+                if (game.shieldTimer <= 0) {
+                    game.shieldActive = false;
+                }
+            }
+            if (game.doubleScoreTimer > 0) {
+                game.doubleScoreTimer -= deltaTime;
+                if (game.doubleScoreTimer <= 0) {
+                    game.doubleScoreActive = false;
+                }
             }
 
             // Update slowdown timer
@@ -554,41 +692,70 @@
                 player.moving = false;
             }
 
-            // Spawn obstacles
-            if (Date.now() - game.lastObstacleSpawn > 1000) {
+            // Spawn obstacles (more frequent as speed increases)
+            const obstacleInterval = Math.max(600, 1200 - speedIncrease * 100);
+            if (Date.now() - game.lastObstacleSpawn > obstacleInterval) {
                 spawnObstacle();
                 game.lastObstacleSpawn = Date.now();
             }
 
-            // Spawn boosts
-            if (Date.now() - game.lastBoostSpawn > 2000) {
-                spawnBoost();
-                game.lastBoostSpawn = Date.now();
+            // Spawn coins frequently
+            if (Date.now() - game.lastCoinSpawn > 400) {
+                spawnCoins();
+                game.lastCoinSpawn = Date.now();
+            }
+
+            // Spawn power-ups occasionally
+            if (Date.now() - game.lastPowerUpSpawn > 8000 + Math.random() * 4000) {
+                spawnPowerUp();
+                game.lastPowerUpSpawn = Date.now();
             }
 
             // Update obstacles
             for (let i = obstacles.length - 1; i >= 0; i--) {
                 const obstacle = obstacles[i];
-                obstacle.y += (game.speed * game.speedMultiplier + 2);
+                obstacle.y += (game.speed * game.speedMultiplier + 3);
 
                 // Check collision
                 const obstacleX = getLaneX(obstacle.lane);
                 if (!obstacle.passed && 
                     Math.abs(player.x - obstacleX) < 30 &&
                     Math.abs(player.y - obstacle.y) < 40) {
-                    // Hit!
-                    game.slowdownTimer = 1000;
-                    game.obstaclesHit++;
-                    player.hit = true;
-                    player.hitTimer = 500;
-                    createParticles(obstacleX, obstacle.y, '#ff00ea', 15);
-                    obstacle.passed = true;
+                    
+                    if (game.shieldActive) {
+                        // Shield absorbs hit
+                        game.shieldActive = false;
+                        game.shieldTimer = 0;
+                        createParticles(obstacleX, obstacle.y, '#ffed00', 20);
+                        obstacle.passed = true;
+                    } else {
+                        // Lose a life!
+                        game.lives--;
+                        game.combo = 0; // Reset combo on hit
+                        game.obstaclesHit++;
+                        player.hit = true;
+                        player.hitTimer = 500;
+                        createParticles(obstacleX, obstacle.y, '#ff00ea', 15);
+                        obstacle.passed = true;
+                        
+                        // Check game over
+                        if (game.lives <= 0) {
+                            gameOver();
+                            return;
+                        }
+                    }
                 }
 
-                // Mark as passed
+                // Mark as passed for combo
                 if (obstacle.y > player.y && !obstacle.passed) {
                     obstacle.passed = true;
-                    game.score += 10;
+                    game.combo++;
+                    if (game.combo > game.bestCombo) {
+                        game.bestCombo = game.combo;
+                    }
+                    const comboBonus = Math.floor(game.combo / 5) * 5;
+                    const baseScore = 10 + comboBonus;
+                    game.score += game.doubleScoreActive ? baseScore * 2 : baseScore;
                 }
 
                 // Remove off-screen obstacles
@@ -597,30 +764,67 @@
                 }
             }
 
-            // Update boosts
-            for (let i = boosts.length - 1; i >= 0; i--) {
-                const boost = boosts[i];
-                boost.y += (game.speed * game.speedMultiplier + 2);
-                boost.pulse += 0.1;
+            // Update coins
+            for (let i = coins.length - 1; i >= 0; i--) {
+                const coin = coins[i];
+                coin.y += (game.speed * game.speedMultiplier + 3);
+                coin.spin += 0.2;
+
+                // Magnet effect
+                const coinX = getLaneX(coin.lane);
+                if (game.magnetActive && Math.abs(player.y - coin.y) < 200) {
+                    const dx = player.x - coinX;
+                    const dy = player.y - coin.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 150) {
+                        coin.x = coinX + dx * 0.15;
+                        coin.y = coin.y + dy * 0.15;
+                    }
+                }
 
                 // Check collection
-                const boostX = getLaneX(boost.lane);
-                if (!boost.collected && 
-                    Math.abs(player.x - boostX) < 30 &&
-                    Math.abs(player.y - boost.y) < 40) {
+                const finalCoinX = game.magnetActive ? coin.x : coinX;
+                if (!coin.collected && 
+                    Math.abs(player.x - finalCoinX) < 35 &&
+                    Math.abs(player.y - coin.y) < 35) {
                     // Collected!
-                    boost.collected = true;
-                    game.boostsCollected++;
-                    game.distance += 100; // Big distance boost
-                    game.score += 100;
-                    createParticles(boostX, boost.y, '#00d9ff', 20);
-                    boosts.splice(i, 1);
+                    coin.collected = true;
+                    game.coins++;
+                    const coinValue = game.doubleScoreActive ? 20 : 10;
+                    game.score += coinValue;
+                    createParticles(finalCoinX, coin.y, '#ffed00', 10);
+                    coins.splice(i, 1);
                     continue;
                 }
 
-                // Remove off-screen boosts
-                if (boost.y > canvas.height + 50) {
-                    boosts.splice(i, 1);
+                // Remove off-screen coins
+                if (coin.y > canvas.height + 50) {
+                    coins.splice(i, 1);
+                }
+            }
+
+            // Update power-ups
+            for (let i = powerUps.length - 1; i >= 0; i--) {
+                const powerUp = powerUps[i];
+                powerUp.y += (game.speed * game.speedMultiplier + 3);
+                powerUp.pulse += 0.1;
+
+                // Check collection
+                const powerUpX = getLaneX(powerUp.lane);
+                if (!powerUp.collected && 
+                    Math.abs(player.x - powerUpX) < 35 &&
+                    Math.abs(player.y - powerUp.y) < 35) {
+                    // Collected!
+                    powerUp.collected = true;
+                    activatePowerUp(powerUp.type);
+                    createParticles(powerUpX, powerUp.y, '#00d9ff', 20);
+                    powerUps.splice(i, 1);
+                    continue;
+                }
+
+                // Remove off-screen power-ups
+                if (powerUp.y > canvas.height + 50) {
+                    powerUps.splice(i, 1);
                 }
             }
 
@@ -637,6 +841,9 @@
 
             // Update player position
             player.y = canvas.height * 0.7;
+            
+            // Update HUD
+            updateHUD();
         }
 
         // Draw game
@@ -667,21 +874,72 @@
             }
             ctx.setLineDash([]);
 
-            // Draw target indicator at top
-            const progress = game.distance / game.targetDistance;
-            ctx.fillStyle = '#ffed00';
-            ctx.font = 'bold 16px Orbitron';
-            ctx.textAlign = 'center';
-            ctx.fillText('TARGET', canvas.width / 2, 30);
-            
-            // Progress bar
-            const barWidth = canvas.width * 0.6;
-            const barX = (canvas.width - barWidth) / 2;
-            ctx.strokeStyle = '#ffed00';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(barX, 40, barWidth, 10);
-            ctx.fillStyle = '#ffed00';
-            ctx.fillRect(barX, 40, barWidth * Math.min(progress, 1), 10);
+            // Draw coins
+            coins.forEach(coin => {
+                const x = game.magnetActive ? coin.x : getLaneX(coin.lane);
+                const spinAngle = coin.spin;
+                const scaleX = Math.abs(Math.cos(spinAngle));
+                
+                ctx.save();
+                ctx.translate(x, coin.y);
+                
+                // Glow
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = '#ffed00';
+                
+                // Coin body
+                ctx.fillStyle = '#ffed00';
+                ctx.beginPath();
+                ctx.ellipse(0, 0, 12 * scaleX, 12, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Coin center
+                ctx.fillStyle = '#ff00ea';
+                ctx.beginPath();
+                ctx.ellipse(0, 0, 6 * scaleX, 6, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.shadowBlur = 0;
+                ctx.restore();
+            });
+
+            // Draw power-ups
+            powerUps.forEach(powerUp => {
+                const x = getLaneX(powerUp.lane);
+                const pulseSize = Math.sin(powerUp.pulse) * 3;
+                
+                // Power-up specific colors and symbols
+                let color, symbol;
+                switch(powerUp.type) {
+                    case 'magnet':
+                        color = '#ff00ea';
+                        symbol = '🧲';
+                        break;
+                    case 'shield':
+                        color = '#ffed00';
+                        symbol = '🛡️';
+                        break;
+                    case 'doublescore':
+                        color = '#00d9ff';
+                        symbol = '2X';
+                        break;
+                }
+                
+                // Glow
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = color;
+                
+                // Power-up shape (rounded square)
+                ctx.fillStyle = color;
+                ctx.fillRect(x - 18 - pulseSize, powerUp.y - 18 - pulseSize, 36 + pulseSize * 2, 36 + pulseSize * 2);
+                
+                // Symbol
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = '#0a0a12';
+                ctx.font = 'bold 20px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(symbol, x, powerUp.y + 8);
+            });
 
             // Draw obstacles
             obstacles.forEach(obstacle => {
@@ -710,37 +968,6 @@
                 ctx.fillText('!', x, obstacle.y + 35);
             });
 
-            // Draw boosts
-            boosts.forEach(boost => {
-                const x = getLaneX(boost.lane);
-                const pulseSize = Math.sin(boost.pulse) * 5;
-                
-                // Glow
-                ctx.shadowBlur = 20;
-                ctx.shadowColor = '#00d9ff';
-                
-                // Boost shape (diamond)
-                ctx.fillStyle = '#00d9ff';
-                ctx.beginPath();
-                ctx.moveTo(x, boost.y - 20 - pulseSize);
-                ctx.lineTo(x + 20 + pulseSize, boost.y);
-                ctx.lineTo(x, boost.y + 20 + pulseSize);
-                ctx.lineTo(x - 20 - pulseSize, boost.y);
-                ctx.closePath();
-                ctx.fill();
-                
-                // Inner highlight
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-                ctx.beginPath();
-                ctx.moveTo(x, boost.y - 10);
-                ctx.lineTo(x + 10, boost.y);
-                ctx.lineTo(x, boost.y + 10);
-                ctx.lineTo(x - 10, boost.y);
-                ctx.closePath();
-                ctx.fill();
-                
-                ctx.shadowBlur = 0;
-            });
 
             // Draw particles
             particles.forEach(p => {
@@ -751,6 +978,18 @@
             // Draw player
             const px = player.x;
             const py = player.y;
+
+            // Shield effect
+            if (game.shieldActive) {
+                ctx.strokeStyle = '#ffed00';
+                ctx.lineWidth = 4;
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = '#ffed00';
+                ctx.beginPath();
+                ctx.arc(px, py, 40, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+            }
 
             // Hit effect
             if (player.hit) {
@@ -787,11 +1026,65 @@
                     ctx.fillRect(px - 15, py + 20 + i * 10, 30, 5);
                 }
             }
+            
+            // Power-up indicators
+            let indicatorY = 10;
+            ctx.font = 'bold 14px Orbitron';
+            ctx.textAlign = 'left';
+            
+            if (game.magnetActive) {
+                ctx.fillStyle = '#ff00ea';
+                ctx.fillText('🧲 MAGNET', 10, indicatorY);
+                indicatorY += 20;
+            }
+            if (game.shieldActive) {
+                ctx.fillStyle = '#ffed00';
+                ctx.fillText('🛡️ SHIELD', 10, indicatorY);
+                indicatorY += 20;
+            }
+            if (game.doubleScoreActive) {
+                ctx.fillStyle = '#00d9ff';
+                ctx.fillText('2X SCORE', 10, indicatorY);
+            }
+        }
 
-            // Update HUD
-            document.getElementById('distance').textContent = Math.floor(game.distance) + 'm';
-            document.getElementById('speed').textContent = Math.floor(game.speedMultiplier * 100) + '%';
-            document.getElementById('score').textContent = game.score;
+        // Game Over
+        function gameOver() {
+            game.running = false;
+            
+            // Calculate game time
+            game.gameTime = Math.floor((Date.now() - game.startTime) / 1000);
+            
+            // Calculate final stats
+            const dodgedObstacles = game.totalObstacles - game.obstaclesHit;
+            
+            // Check for new high score
+            const isNewRecord = game.score > game.highScore;
+            if (isNewRecord) {
+                game.highScore = game.score;
+                localStorage.setItem('cyberChaseHighScore', game.highScore);
+            }
+            
+            // Update game over screen
+            document.getElementById('gameOverScore').textContent = game.score;
+            document.getElementById('gameOverDistance').textContent = Math.floor(game.distance);
+            document.getElementById('gameOverCoins').textContent = game.coins;
+            document.getElementById('gameOverDodges').textContent = dodgedObstacles;
+            document.getElementById('gameOverCombo').textContent = game.bestCombo;
+            document.getElementById('gameOverTime').textContent = game.gameTime;
+            
+            // Show new record message
+            const recordEl = document.getElementById('gameOverNewRecord');
+            if (isNewRecord) {
+                recordEl.textContent = '🎉 NEW HIGH SCORE! 🎉';
+                recordEl.style.display = 'block';
+            } else {
+                recordEl.textContent = `High Score: ${game.highScore}`;
+                recordEl.style.display = 'block';
+            }
+            
+            // Show game over screen
+            document.getElementById('gameOverScreen').classList.remove('hidden');
         }
 
         // Win game
