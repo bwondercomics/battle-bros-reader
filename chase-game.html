@@ -325,9 +325,10 @@
                 <h2>MISSION BRIEFING</h2>
                 <p>Chase the ultimate power-up through cyberspace!</p>
                 <p>Use <span class="key">←</span> <span class="key">→</span> arrow keys to dodge obstacles</p>
-                <p>🔷 <strong>Blue Boosts</strong> increase your speed</p>
+                <p>🔷 <strong>Blue Boosts</strong> give +100m progress</p>
                 <p>⚠️ <strong>Red Obstacles</strong> slow you down</p>
-                <p>Reach 1000m to claim victory!</p>
+                <p>Reach <strong>5000m</strong> to claim victory!</p>
+                <p style="font-size: 0.85em; color: #ffed00; margin-top: 10px;">⚡ Speed increases as you get closer!</p>
             </div>
             <button id="startBtn">START GAME</button>
         </div>
@@ -335,15 +336,20 @@
         <!-- Win Screen -->
         <div class="overlay hidden" id="winScreen">
             <div class="win-screen">
-                <h1>VICTORY!</h1>
+                <h1>🏆 VICTORY! 🏆</h1>
                 <div class="subtitle">You're a True Battle Bro!</div>
                 <div class="final-score">Final Score: <span id="finalScore">0</span></div>
                 <div class="instructions pixel-corners">
-                    <h2>MISSION COMPLETE</h2>
-                    <p>You've mastered the cyber chase!</p>
-                    <p>Distance: <span id="finalDistance">0</span>m</p>
-                    <p>Boosts Collected: <span id="finalBoosts">0</span></p>
-                    <p>Obstacles Dodged: <span id="finalDodges">0</span></p>
+                    <h2>🎯 MISSION COMPLETE 🎯</h2>
+                    <p style="font-size: 1.1em; color: #ffed00;">You've conquered the cyber chase!</p>
+                    <p>📏 <strong>Distance Traveled:</strong> <span id="finalDistance">0</span>m</p>
+                    <p>🔷 <strong>Boosts Collected:</strong> <span id="finalBoosts">0</span></p>
+                    <p>✅ <strong>Obstacles Dodged:</strong> <span id="finalDodges">0</span></p>
+                    <p>💥 <strong>Obstacles Hit:</strong> <span id="finalHits">0</span></p>
+                    <p>⏱️ <strong>Time:</strong> <span id="finalTime">0</span>s</p>
+                    <p style="font-size: 1.2em; color: #00d9ff; margin-top: 15px; font-weight: bold;">
+                        <span id="performanceRating">LEGENDARY PERFORMANCE!</span>
+                    </p>
                 </div>
                 <button id="playAgainBtn">PLAY AGAIN</button>
             </div>
@@ -367,17 +373,19 @@
         const game = {
             running: false,
             distance: 0,
-            speed: 5,
-            baseSpeed: 5,
+            speed: 0.8,
+            baseSpeed: 0.8,
             speedMultiplier: 1,
             score: 0,
             boostsCollected: 0,
             obstaclesHit: 0,
             totalObstacles: 0,
-            targetDistance: 1000,
+            targetDistance: 5000,
             lastObstacleSpawn: 0,
             lastBoostSpawn: 0,
-            slowdownTimer: 0
+            slowdownTimer: 0,
+            startTime: 0,
+            gameTime: 0
         };
 
         // Player
@@ -429,6 +437,8 @@
         function startGame() {
             document.getElementById('startScreen').classList.add('hidden');
             game.running = true;
+            game.startTime = Date.now();
+            lastTime = 0; // Reset lastTime for proper deltaTime calculation
             gameLoop();
         }
 
@@ -443,6 +453,8 @@
             game.lastObstacleSpawn = 0;
             game.lastBoostSpawn = 0;
             game.slowdownTimer = 0;
+            game.startTime = 0;
+            game.gameTime = 0;
             player.lane = 1;
             player.targetLane = 1;
             player.hit = false;
@@ -502,6 +514,10 @@
         // Update game state
         function update(deltaTime) {
             if (!game.running) return;
+
+            // Progressive difficulty - speed increases as you get closer to target
+            const progressPercent = game.distance / game.targetDistance;
+            game.speed = game.baseSpeed * (1 + progressPercent * 1.5); // Speed increases up to 2.5x
 
             // Update distance
             game.distance += game.speed * game.speedMultiplier * deltaTime / 16;
@@ -595,8 +611,8 @@
                     // Collected!
                     boost.collected = true;
                     game.boostsCollected++;
-                    game.distance += 50; // Big distance boost
-                    game.score += 50;
+                    game.distance += 100; // Big distance boost
+                    game.score += 100;
                     createParticles(boostX, boost.y, '#00d9ff', 20);
                     boosts.splice(i, 1);
                     continue;
@@ -782,14 +798,35 @@
         function winGame() {
             game.running = false;
             
+            // Calculate game time
+            game.gameTime = Math.floor((Date.now() - game.startTime) / 1000);
+            
             // Calculate final stats
             const dodgedObstacles = game.totalObstacles - game.obstaclesHit;
+            const hitRate = game.totalObstacles > 0 ? (game.obstaclesHit / game.totalObstacles * 100) : 0;
+            
+            // Calculate performance rating
+            let rating = "BATTLE BRO!";
+            if (hitRate === 0) {
+                rating = "🌟 PERFECT RUN! LEGENDARY! 🌟";
+            } else if (hitRate < 10) {
+                rating = "⭐ EXCELLENT! NEAR FLAWLESS! ⭐";
+            } else if (hitRate < 25) {
+                rating = "✨ GREAT JOB! SKILLED PILOT! ✨";
+            } else if (hitRate < 50) {
+                rating = "💪 GOOD RUN! KEEP PRACTICING! 💪";
+            } else {
+                rating = "🎯 MISSION COMPLETE! TRY AGAIN! 🎯";
+            }
             
             // Update win screen
             document.getElementById('finalScore').textContent = game.score;
             document.getElementById('finalDistance').textContent = Math.floor(game.distance);
             document.getElementById('finalBoosts').textContent = game.boostsCollected;
             document.getElementById('finalDodges').textContent = dodgedObstacles;
+            document.getElementById('finalHits').textContent = game.obstaclesHit;
+            document.getElementById('finalTime').textContent = game.gameTime;
+            document.getElementById('performanceRating').textContent = rating;
             
             // Show win screen
             document.getElementById('winScreen').classList.remove('hidden');
@@ -798,6 +835,13 @@
         // Game loop
         let lastTime = 0;
         function gameLoop(timestamp = 0) {
+            // Handle first frame
+            if (lastTime === 0) {
+                lastTime = timestamp;
+                requestAnimationFrame(gameLoop);
+                return;
+            }
+            
             const deltaTime = timestamp - lastTime;
             lastTime = timestamp;
 

@@ -7,9 +7,9 @@ A retro cyberpunk arcade game where you chase the ultimate power-up through cybe
 1. Open `chase-game.html` in any modern web browser
 2. Click "START GAME" to begin
 3. Use **← LEFT** and **→ RIGHT** arrow keys to dodge obstacles
-4. Collect **🔷 Blue Boosts** to increase your progress (+50m each)
+4. Collect **🔷 Blue Boosts** to gain +100m of instant progress
 5. Avoid **⚠️ Red Obstacles** that slow you down temporarily
-6. Reach **1000m** to win!
+6. Reach **5000m** to win!
 
 ## Game Mechanics
 
@@ -21,14 +21,22 @@ A retro cyberpunk arcade game where you chase the ultimate power-up through cybe
 - Your character automatically moves forward, chasing the target
 - Navigate between 3 lanes to avoid obstacles and collect boosts
 - Each obstacle you hit reduces your speed by 50% for 1 second
-- Blue boosts give you +50m of instant progress
+- Blue boosts give you +100m of instant progress
 - Dodging obstacles earns you +10 points
-- The game tracks your score, distance, speed, and statistics
+- **Progressive Difficulty**: Speed increases as you get closer to the target (up to 2.5x)!
+- The game tracks your score, distance, speed, time, and performance
 
 ### Scoring
 - **Dodge Obstacle**: +10 points
-- **Collect Blue Boost**: +50 points (and +50m progress)
+- **Collect Blue Boost**: +100 points (and +100m progress)
 - **Hit Obstacle**: Speed penalty (50% reduction for 1 second)
+
+### Performance Ratings
+- **Perfect Run**: No obstacles hit - LEGENDARY!
+- **Excellent**: Less than 10% hit rate
+- **Great**: Less than 25% hit rate
+- **Good**: Less than 50% hit rate
+- **Complete**: 50%+ hit rate
 
 ## Features
 
@@ -36,10 +44,11 @@ A retro cyberpunk arcade game where you chase the ultimate power-up through cybe
 - 🌈 Neon colors with glow effects
 - ✨ Particle effects for collisions and collections
 - 📊 Real-time HUD showing distance, speed, and score
-- 🏆 Victory screen with detailed statistics
+- 🏆 Enhanced victory screen with detailed statistics and performance ratings
 - 📱 Responsive design for desktop and mobile
-- ⚡ Smooth 60fps gameplay
+- ⚡ Smooth 60fps gameplay with progressive difficulty
 - 🎨 Scanline CRT effects for authentic retro feel
+- ⏱️ Time tracking and performance analysis
 
 ## Technical Details
 
@@ -50,6 +59,16 @@ A retro cyberpunk arcade game where you chase the ultimate power-up through cybe
 - Dynamic obstacle and boost spawning
 - Collision detection system
 - Particle explosion effects
+- Progressive difficulty scaling
+
+## Game Balance
+
+- **Target Distance**: 5000m (5x original distance)
+- **Base Speed**: 0.8 units/frame (slower start)
+- **Speed Scaling**: Increases to 2.5x base speed at finish
+- **Expected Playtime**: 25-60 seconds depending on boost collection
+- **Boost Value**: +100m instant progress
+- **Challenge Level**: Moderate to challenging with progressive difficulty
 
 ## Theme Integration
 
